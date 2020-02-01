@@ -1,0 +1,25 @@
+{
+  "name": "fhexlet-rssfeed-andryushque",
+  "version": "1.0.0",
+  "description": "Hexlet Frontend Project#3 - 'RSS News Feed'",
+  "keywords": [
+    "hexlet",
+    "frontend",
+    "javascript",
+    "rss"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andryushque/frontend-project-lvl3.git"
+  },
+  "author": "Andrey Ustinov a.k.a andryushque",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andryushque/frontend-project-lvl3/issues"
+  },
+  "homepage": "https://github.com/andryushque/frontend-project-lvl3#readme"
+}
