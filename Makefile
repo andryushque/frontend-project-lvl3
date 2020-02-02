@@ -1,11 +1,12 @@
-install:
-	npm install
+start:
+	npm run build
 
-link:
-	npm link
+develop:
+	npx webpack-dev-server --open
 
-babel:
-	npx babel src --out-dir dist
+build:
+	rm -rf dist
+	NODE_ENV=production npx webpack
 
 publish:
 	npm publish --dry-run
