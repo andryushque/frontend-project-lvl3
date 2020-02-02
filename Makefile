@@ -1,15 +1,18 @@
+install:
+	npm install
+
 start:
 	npm run build
 
 develop:
-	npx webpack-dev-server --open
+	npx webpack-dev-server
 
 build:
 	rm -rf dist
 	NODE_ENV=production npx webpack
 
 publish:
-	npm publish --dry-run
+	npm publish
 
 lint:
 	npx eslint .
@@ -17,5 +20,3 @@ lint:
 test:
 	npm test
 
-test-coverage:
-	npm test -- --coverage
