@@ -1,0 +1,24 @@
+name: rss news feed build
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install dependencies
+        run: make install
+
+      - name: build
+        run: make build
+
+      - name: lint
+        run: make lint
