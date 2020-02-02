@@ -8,9 +8,11 @@
     "javascript",
     "rss"
   ],
-  "main": "index.js",
+  "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --display-error-details"
   },
   "repository": {
     "type": "git",
@@ -43,7 +45,8 @@
     "jest-cli": "^25.1.0",
     "style-loader": "^1.1.3",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.2"
   },
   "dependencies": {
     "@babel/polyfill": "^7.8.3",
