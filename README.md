@@ -6,5 +6,4 @@
 
 **RSS news feed with automatic update.**
 
-## Installation
-## Usage
+[Link to news feed](https://frontend-project-lvl3.andryushque.now.sh/)
