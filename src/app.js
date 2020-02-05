@@ -2,10 +2,10 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { watch } from 'melanke-watchjs';
 import * as yup from 'yup';
-// import axios from 'axios';
+import axios from 'axios';
 
 export default () => {
-  // const domParser = new DOMParser();
+  const domParser = new DOMParser();
 
   // const body = document.querySelector('body');
   const inputForm = document.getElementById('url');
@@ -22,26 +22,45 @@ export default () => {
     urlList: [],
   };
 
+  // validation functions
   const checkoutFeedUrlSchema = yup
     .string()
     .url('Please enter a valid URL address.')
     .required('This field is required.');
 
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-
   const isUrlDuplicated = (url) => state.urlList.includes(url);
 
-  const createUrlFeedList = (url) => {
+  const createUrlFeedList = (title, description = 'no description') => {
     const li = document.createElement('li');
     li.classList.add('feedListItem');
-    li.append(url);
+
+    const urlTitle = document.createElement('h4');
+    urlTitle.innerText = title;
+
+    const urlDescription = document.createElement('p');
+    urlDescription.innerText = description;
+
+    li.append(urlTitle, urlDescription);
     document.querySelector('.feedList').append(li);
   };
 
+  // DOMParser => https://developer.mozilla.org/ru/docs/Web/API/DOMParser
+  // proxy => https://github.com/Rob--W/cors-anywhere/#documentation
+  // axios GET request => https://github.com/axios/axios
+  const getParsedXml = (url) => {
+    axios.get(`https://cors-anywhere.herokuapp.com/${url}`)
+      .then((response) => domParser.parseFromString(response.data, 'application/xml'))
+      .then((parsedXML) => {
+        const title = parsedXML.querySelector('title').textContent;
+        const description = parsedXML.querySelector('description').textContent;
+        createUrlFeedList(title, description);
+      })
+      .catch(console.log);
+  };
+
+  // events
   inputForm.addEventListener('input', (e) => {
-    // происходит валидация в процессе ввода
-    // => меняется состояние validationState
-    // => меняется состояние inputProcessState
     state.form.inputedUrl = e.target.value;
     isUrlValid(state.form.inputedUrl).then((valid) => {
       if (valid) {
@@ -54,17 +73,14 @@ export default () => {
   });
 
   button.addEventListener('click', () => {
-    // происходит добавление адреса в список (пока что просто как пример)
-    // => меняется состояние inputProcessState
-    // => меняется состояние inputedUrl
-    // console.log(state.form.inputedUrl);
     state.urlList.push(state.form.inputedUrl);
     console.log(state.urlList);
-    createUrlFeedList(state.form.inputedUrl);
 
+    getParsedXml(state.form.inputedUrl);
     state.form.inputProcessState = 'done';
   });
 
+  // watchers
   watch(state.form, 'validationState', () => {
     if (state.form.validationState) {
       button.disabled = !state.form.validationState; // => false
