@@ -18,6 +18,8 @@ export default () => {
 
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
 
+  const isUrlDuplicated = (url) => state.urlList.includes(url);
+
   const createUrlFeedList = (url) => {
     const li = document.createElement('li');
     li.classList.add('feedListItem');
@@ -29,6 +31,7 @@ export default () => {
     form: {
       inputProcessState: 'inProcess',
       validationState: true,
+      inputedUrl: '',
       // submitDisabled: false
     },
 
@@ -39,24 +42,25 @@ export default () => {
     // происходит валидация в процессе ввода
     // => меняется состояние validationState
     // => меняется состояние inputProcessState
-    const url = e.target.value;
-    isUrlValid(url).then((valid) => {
-      if (valid) { // && state.urlList.includes(url)
-        state.form.validationState = true;
+    state.form.inputedUrl = e.target.value;
+    isUrlValid(state.form.inputedUrl).then((valid) => {
+      if (valid) {
+        state.form.validationState = !isUrlDuplicated(state.form.inputedUrl);
       } else {
         state.form.validationState = false;
       }
     });
-
     state.form.inputProcessState = 'inProcess';
   });
 
   button.addEventListener('click', () => {
     // происходит добавление адреса в список (пока что просто как пример)
     // => меняется состояние inputProcessState
-    const url = inputForm.value;
-    console.log(url);
-    createUrlFeedList(url);
+    // => меняется состояние inputedUrl
+    // console.log(state.form.inputedUrl);
+    state.urlList.push(state.form.inputedUrl);
+    console.log(state.urlList);
+    createUrlFeedList(state.form.inputedUrl);
 
     state.form.inputProcessState = 'done';
   });
