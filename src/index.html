@@ -8,12 +8,12 @@
 
 </head>
 
-<body>
+<body class="bg-light">
 
-<main role="main">
+<main role="main" class="bg-light">
 
     <!-- RSS input field -->
-    <div class="jumbotron jumbotron-fluid">
+    <div class="jumbotron jumbotron-fluid p-4 m-0 bg-light">
         <div class="container">
            <h1 class="display-8">RSS News Feed</h1>
             <form id="form">
@@ -28,10 +28,26 @@
         </div>
     </div> <!-- /.jumbotron -->
 
-    <!-- Feed List -->
-    <div class="validated-url-list">
-        <ul class="feedList">
+    <!-- RSS examples -->
+    <div class="container p-0">
+        <ul>
+            <li><a href="https://ru.hexlet.io/blog.rss">https://ru.hexlet.io/blog.rss</a></li>
+            <li><a href="https://meduza.io/rss/all">https://meduza.io/rss/all</a></li>
+            <li><a href="https://dtf.ru/rss">https://dtf.ru/rss</a></li>
         </ul>
+        <hr>
+    </div>
+
+    <!-- Feed List -->
+    <div class="container d-flex">
+        <div class="validated-url-list col-3">
+            <ul class="feedList">
+            </ul>
+        </div>
+        <div class="posts-list col-9">
+            <ul class="postsList">
+            </ul>
+        </div>
     </div>
 
 </main>
