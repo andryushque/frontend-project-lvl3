@@ -45,16 +45,35 @@ export default () => {
     document.querySelector('.feedList').append(li);
   };
 
+  const createPostsList = (itemsColl) => {
+    const items = Object.values(itemsColl);
+    console.log(items);
+
+    items.forEach((item) => {
+      const li = document.createElement('li');
+      li.classList.add('postItem');
+
+      const urlLink = document.createElement('a');
+      urlLink.href = item.querySelector('link').textContent;
+      urlLink.innerText = item.querySelector('title').textContent;
+
+      li.append(urlLink);
+      document.querySelector('.postsList').append(li);
+    });
+  };
+
   // DOMParser => https://developer.mozilla.org/ru/docs/Web/API/DOMParser
   // proxy => https://github.com/Rob--W/cors-anywhere/#documentation
   // axios GET request => https://github.com/axios/axios
   const getParsedXml = (url) => {
     axios.get(`https://cors-anywhere.herokuapp.com/${url}`)
       .then((response) => domParser.parseFromString(response.data, 'application/xml'))
-      .then((parsedXML) => {
-        const title = parsedXML.querySelector('title').textContent;
-        const description = parsedXML.querySelector('description').textContent;
+      .then((parsed) => {
+        const title = parsed.querySelector('title').textContent;
+        const description = parsed.querySelector('description').textContent;
+        const items = parsed.querySelectorAll('item');
         createUrlFeedList(title, description);
+        createPostsList(items);
       })
       .catch(console.log);
   };
