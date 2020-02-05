@@ -5,70 +5,79 @@ import * as yup from 'yup';
 // import axios from 'axios';
 
 export default () => {
-  // проверка валидности введенного url через yup (via regex)
+  // const domParser = new DOMParser();
+
+  // const body = document.querySelector('body');
+  const inputForm = document.getElementById('url');
+  const button = document.querySelector('.btn');
+
   const checkoutFeedUrlSchema = yup
     .string()
     .url('Please enter a valid URL address.')
     .required('This field is required.');
 
-  const isUrlValid = (url) => checkoutFeedUrlSchema
-    .isValid(url) // => возвращается промис
-    .then((valid) => valid);
+  const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
 
-  // состояние - процесс ввода url-адреса, статус валидности введенного адреса (true/false),
-  // текущий url, состояние кнопки, список адресов
+  const createUrlFeedList = (url) => {
+    const li = document.createElement('li');
+    li.classList.add('feedListItem');
+    li.append(url);
+    document.querySelector('.feedList').append(li);
+  };
+
   const state = {
     form: {
-      inputProcessState: 'inProcess', // 'inProcess', 'done'
+      inputProcessState: 'inProcess',
       validationState: true,
-      currentUrl: '',
-      submitDisabled: false,
+      // submitDisabled: false
     },
 
     urlList: [],
   };
 
-  const inputForm = document.getElementById('url');
-  const button = document.querySelector('.btn');
-
-  // обработчик - меняет состояние
   inputForm.addEventListener('input', (e) => {
-      isUrlValid(e.target.value).then((valid) => {
-      if (valid) {
-          state.form.validationState = true;
-          inputForm.classList.add('is-valid');
-          inputForm.classList.remove('is-invalid');
-        } else {
-          state.form.validationState = false;
-          inputForm.classList.add('is-invalid');
-          inputForm.classList.remove('is-valid');
-       }
-      })
+    // происходит валидация в процессе ввода
+    // => меняется состояние validationState
+    // => меняется состояние inputProcessState
+    const url = e.target.value;
+    isUrlValid(url).then((valid) => {
+      if (valid) { // && state.urlList.includes(url)
+        state.form.validationState = true;
+      } else {
+        state.form.validationState = false;
+      }
+    });
+
+    state.form.inputProcessState = 'inProcess';
   });
 
-  inputForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+  button.addEventListener('click', () => {
+    // происходит добавление адреса в список (пока что просто как пример)
+    // => меняется состояние inputProcessState
+    const url = inputForm.value;
+    console.log(url);
+    createUrlFeedList(url);
+
     state.form.inputProcessState = 'done';
-    button.disabled = false;
-    // сначала добавляем адрес в список (добавлю код позже)
-    // а затем обнуляем
-    // state.form.currentUrl = '';
   });
 
   watch(state.form, 'validationState', () => {
-    // если введенный адрес валидный, то кнопка активна
-    button.disabled = state.form.validationState ? false : true;
-     // console.log(state.form.validationState);
+    if (state.form.validationState) {
+      button.disabled = !state.form.validationState; // => false
+      inputForm.classList.remove('is-invalid');
+      inputForm.classList.add('is-valid');
+    } else {
+      button.disabled = !state.form.validationState; // => true
+      inputForm.classList.remove('is-valid');
+      inputForm.classList.add('is-invalid');
+    }
   });
 
   watch(state.form, 'inputProcessState', () => {
     if (state.form.inputProcessState === 'done') {
-      button.disabled = false;
+      inputForm.classList.remove('is-valid');
+      inputForm.value = '';
+      button.disabled = true;
     }
   });
 };
-
-// код самую малость работает - адреса проходят валидацию
-// добавление в список адресов, проверка на дубликат
-// подобрать имена получше
-// разобраться с классами поля ввода
