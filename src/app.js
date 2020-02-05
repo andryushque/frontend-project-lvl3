@@ -11,6 +11,17 @@ export default () => {
   const inputForm = document.getElementById('url');
   const button = document.querySelector('.btn');
 
+  const state = {
+    form: {
+      inputProcessState: 'inProcess',
+      validationState: true,
+      inputedUrl: '',
+      // submitDisabled: false
+    },
+
+    urlList: [],
+  };
+
   const checkoutFeedUrlSchema = yup
     .string()
     .url('Please enter a valid URL address.')
@@ -25,17 +36,6 @@ export default () => {
     li.classList.add('feedListItem');
     li.append(url);
     document.querySelector('.feedList').append(li);
-  };
-
-  const state = {
-    form: {
-      inputProcessState: 'inProcess',
-      validationState: true,
-      inputedUrl: '',
-      // submitDisabled: false
-    },
-
-    urlList: [],
   };
 
   inputForm.addEventListener('input', (e) => {
