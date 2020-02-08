@@ -21,7 +21,6 @@ const createFeed = (title, description, itemsColl) => {
   const items = Object.values(itemsColl);
   items.forEach((item) => {
     const { postTitle, postLink } = item;
-    console.log(item);
     const li = document.createElement('li');
     const urlLink = document.createElement('a');
     urlLink.href = postLink;
