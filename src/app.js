@@ -45,9 +45,9 @@ export default () => {
   button.addEventListener('click', () => {
     const url = state.form.inputedUrl;
     state.urlList.push(url);
-    console.log(state.urlList);
+    const proxy = 'https://cors-anywhere.herokuapp.com';
 
-    axios.get(`https://cors-anywhere.herokuapp.com/${url}`)
+    axios.get(`${proxy}/${url}`)
       .then((response) => {
         const feed = parse(response.data);
         createUrlFeedList(feed.title, feed.description);
