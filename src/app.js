@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { watch } from 'melanke-watchjs';
 import * as yup from 'yup';
 import axios from 'axios';
-import { createUrlFeedList, createPostsList } from './renders';
+import createFeed from './renders';
 import parse from './parser';
 
 export default () => {
@@ -51,8 +51,7 @@ export default () => {
     axios.get(link)
       .then((response) => {
         const feed = parse(response.data);
-        createUrlFeedList(feed.title, feed.description);
-        createPostsList(feed.items);
+        createFeed(feed.title, feed.description, feed.items);
       })
       .catch(console.log);
 

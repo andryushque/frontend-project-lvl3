@@ -1,32 +1,36 @@
-const createUrlFeedList = (title, description = 'no description') => {
-  const li = document.createElement('li');
-  li.classList.add('feedListItem');
+const body = document.querySelector('body');
 
-  const urlTitle = document.createElement('h4');
-  urlTitle.innerText = title;
+const createFeed = (title, description, itemsColl) => {
+  const divFeed = document.createElement('div');
+  divFeed.classList.add('container', 'd-flex', 'mb-4');
 
-  const urlDescription = document.createElement('p');
-  urlDescription.innerText = description;
+  const divFeedInfo = document.createElement('div');
+  divFeedInfo.classList.add('col-3');
 
-  li.append(urlTitle, urlDescription);
-  document.querySelector('.feedList').append(li);
-};
+  const divFeedPost = document.createElement('div');
+  divFeedPost.classList.add('col-9');
 
-const createPostsList = (itemsColl) => {
+  const feedTitle = document.createElement('h4');
+  feedTitle.innerText = title;
+
+  const feedDescription = document.createElement('p');
+  feedDescription.innerText = description;
+
+  divFeedInfo.append(feedTitle, feedDescription);
+
   const items = Object.values(itemsColl);
-  console.log(items);
-
   items.forEach((item) => {
     const li = document.createElement('li');
-    li.classList.add('postItem');
-
     const urlLink = document.createElement('a');
     urlLink.href = item.querySelector('link').textContent;
     urlLink.innerText = item.querySelector('title').textContent;
 
     li.append(urlLink);
-    document.querySelector('.postsList').append(li);
+    divFeedPost.append(li);
   });
+
+  divFeed.append(divFeedInfo, divFeedPost);
+  body.append(divFeed);
 };
 
-export { createUrlFeedList, createPostsList };
+export default createFeed;
