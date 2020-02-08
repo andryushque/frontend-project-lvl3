@@ -4,11 +4,9 @@ import { watch } from 'melanke-watchjs';
 import * as yup from 'yup';
 import axios from 'axios';
 import { createUrlFeedList, createPostsList } from './renders';
+import parse from './parser';
 
 export default () => {
-  const domParser = new DOMParser();
-
-  // const body = document.querySelector('body');
   const inputForm = document.getElementById('url');
   const button = document.querySelector('.btn');
 
@@ -17,7 +15,6 @@ export default () => {
       inputProcessState: 'inProcess',
       validationState: true,
       inputedUrl: '',
-      // submitDisabled: false
     },
 
     urlList: [],
@@ -31,22 +28,6 @@ export default () => {
 
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
   const isUrlDuplicated = (url) => state.urlList.includes(url);
-
-  // DOMParser => https://developer.mozilla.org/ru/docs/Web/API/DOMParser
-  // proxy => https://github.com/Rob--W/cors-anywhere/#documentation
-  // axios GET request => https://github.com/axios/axios
-  const getParsedXml = (url) => {
-    axios.get(`https://cors-anywhere.herokuapp.com/${url}`)
-      .then((response) => domParser.parseFromString(response.data, 'application/xml'))
-      .then((parsed) => {
-        const title = parsed.querySelector('title').textContent;
-        const description = parsed.querySelector('description').textContent;
-        const items = parsed.querySelectorAll('item');
-        createUrlFeedList(title, description);
-        createPostsList(items);
-      })
-      .catch(console.log);
-  };
 
   // events
   inputForm.addEventListener('input', (e) => {
@@ -62,10 +43,18 @@ export default () => {
   });
 
   button.addEventListener('click', () => {
-    state.urlList.push(state.form.inputedUrl);
+    const url = state.form.inputedUrl;
+    state.urlList.push(url);
     console.log(state.urlList);
 
-    getParsedXml(state.form.inputedUrl);
+    axios.get(`https://cors-anywhere.herokuapp.com/${url}`)
+      .then((response) => {
+        const feed = parse(response.data);
+        createUrlFeedList(feed.title, feed.description);
+        createPostsList(feed.items);
+      })
+      .catch(console.log);
+
     state.form.inputProcessState = 'done';
   });
 
