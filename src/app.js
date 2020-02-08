@@ -51,7 +51,8 @@ export default () => {
     axios.get(link)
       .then((response) => {
         const feed = parse(response.data);
-        createFeed(feed.title, feed.description, feed.items);
+        console.log(feed.title);
+        createFeed(feed.title, feed.description, feed.feedPosts);
       })
       .catch(console.log);
 
