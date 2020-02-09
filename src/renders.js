@@ -42,18 +42,18 @@ const createFeed = (title, description, itemsColl) => {
 
 
 const createMessage = (resultMessage) => {
-    if (document.querySelector('.message')) {
-        document.querySelector('.message').remove();
-    };
-    const divMessage = document.createElement('div');
-    divMessage.classList.add('message', 'container', 'invalid-feedback', 'd-block');
-    divMessage.innerText = resultMessage;
-    message.append(divMessage);
+  if (document.querySelector('.message')) {
+    document.querySelector('.message').remove();
+  }
+  const divMessage = document.createElement('div');
+  divMessage.classList.add('message', 'container', 'invalid-feedback', 'd-block');
+  divMessage.innerText = resultMessage;
+  message.append(divMessage);
 };
 
 
 const render = (state) => {
-  const { form, feed, validateResultMessage } = state;
+  const { form, feed } = state;
 
   watch(form, 'validationState', () => {
     if (form.validationState) {
@@ -76,17 +76,16 @@ const render = (state) => {
       inputForm.value = '';
       if (document.querySelector('.message')) {
         document.querySelector('.message').remove();
-      };
-      state.validateResultMessage = '';
+      }
       button.disabled = true;
-    };
+    }
   });
 
   watch(feed, 'currentPosts', () => {
-    const title = feed.currentPosts.title;
-    const description = feed.currentPosts.description;
-    const feedPosts = feed.currentPosts.feedPosts;
-    createFeed(title, description, feedPosts);
+    const currentTitle = feed.currentPosts.title;
+    const currentDescription = feed.currentPosts.description;
+    const currentFeedPosts = feed.currentPosts.feedPosts;
+    createFeed(currentTitle, currentDescription, currentFeedPosts);
   });
 };
 

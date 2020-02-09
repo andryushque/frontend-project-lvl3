@@ -43,7 +43,7 @@ export default () => {
       } else {
         state.form.validationState = false;
         state.validateResultMessage = 'This URL is invalid';
-      };
+      }
     });
     state.form.inputProcessState = 'inProcess';
   });
