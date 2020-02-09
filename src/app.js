@@ -15,6 +15,7 @@ const state = {
     currentPosts: [],
   },
   urlList: [],
+  validateResultMessage: '',
 };
 
 export default () => {
@@ -31,12 +32,18 @@ export default () => {
 
   inputForm.addEventListener('input', (e) => {
     state.form.inputedUrl = e.target.value;
+
     isUrlValid(state.form.inputedUrl).then((valid) => {
-      if (valid) {
-        state.form.validationState = !isUrlDuplicated(state.form.inputedUrl);
+      if (valid && state.form.inputedUrl && !isUrlDuplicated(state.form.inputedUrl)) {
+        state.form.validationState = true;
+        state.validateResultMessage = '';
+      } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
+        state.form.validationState = false;
+        state.validateResultMessage = 'This URL is already added';
       } else {
         state.form.validationState = false;
-      }
+        state.validateResultMessage = 'This URL is invalid';
+      };
     });
     state.form.inputProcessState = 'inProcess';
   });
@@ -56,6 +63,6 @@ export default () => {
 
     state.form.inputProcessState = 'done';
   });
-};
 
-render(state);
+  render(state);
+};
