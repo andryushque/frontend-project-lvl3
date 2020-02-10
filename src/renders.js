@@ -40,23 +40,13 @@ const createFeed = (title, description, itemsColl) => {
   body.append(divFeed);
 };
 
-// => one render function for all errors?
-const createMessage = (resultMessage) => {
-  if (document.querySelector('.message')) {
-    document.querySelector('.message').remove();
-  }
-  const divMessage = document.createElement('div');
-  divMessage.classList.add('message', 'container', 'd-block', 'mt-2', 'invalid-feedback');
-  divMessage.innerText = resultMessage;
-  message.append(divMessage);
-};
 
-const createErrorMessage = (errorMessage) => {
-  if (document.querySelector('.message')) {
-    document.querySelector('.message').remove();
+const createErrorMessage = (errorMessage, feedbackTypeClass) => {
+  if (document.querySelector('.errorMessage')) {
+    document.querySelector('.errorMessage').remove();
   }
   const divErrorMessage = document.createElement('div');
-  divErrorMessage.classList.add('message', 'container', 'd-block', 'mt-2', 'alert-danger');
+  divErrorMessage.classList.add('errorMessage', 'container', 'd-block', 'mt-2', feedbackTypeClass);
   divErrorMessage.innerText = errorMessage;
   message.append(divErrorMessage);
 };
@@ -82,19 +72,19 @@ const render = (state) => {
       inputForm.classList.remove('is-valid');
       inputForm.classList.remove('is-invalid');
       inputForm.value = '';
-      if (document.querySelector('.message')) {
-        document.querySelector('.message').remove();
-      }
       button.disabled = true;
+      if (document.querySelector('.errorMessage')) {
+        document.querySelector('.errorMessage').remove();
+      }
     }
   });
 
   watch(state, 'validateResultMessage', () => {
-    createMessage(state.validateResultMessage);
+    createErrorMessage(state.validateResultMessage, 'invalid-feedback');
   });
 
   watch(state, 'errorMessage', () => {
-    createErrorMessage(state.errorMessage);
+    createErrorMessage(state.errorMessage, 'alert-danger');
   });
 
   watch(feed, 'currentPosts', () => {

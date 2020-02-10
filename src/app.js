@@ -19,7 +19,7 @@ const state = {
   errorMessage: '',
 };
 
-const errorsMessages = {
+const errorMessages = {
   requestError: '404: The requested URL was not found on this server. Please try again.',
   serverError: '500: Internal Server Error. Please try again.',
   networkError: 'Network problem. Please check your internet connection and try again.',
@@ -70,21 +70,21 @@ export default () => {
       .then()
       .catch((err) => {
         if (err.message === 'Network Error') {
-          state.errorMessage = errorsMessages.networkError;
+          state.errorMessage = errorMessages.networkError;
         } else if (err.response) {
           const errorStatus = err.response.status;
           switch (errorStatus) { // => add later: 406
             case 404:
-              state.errorMessage = errorsMessages.requestError;
+              state.errorMessage = errorMessages.requestError;
               break;
             case 500:
-              state.errorMessage = errorsMessages.serverError;
+              state.errorMessage = errorMessages.serverError;
               break;
             default:
-              state.errorMessage = errorsMessages.unknownError;
+              state.errorMessage = errorMessages.unknownError;
           }
         } else {
-          state.errorMessage = errorsMessages.unknownError;
+          state.errorMessage = errorMessages.unknownError;
         }
       });
     state.form.inputProcessState = 'done';
