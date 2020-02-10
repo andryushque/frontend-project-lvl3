@@ -1,0 +1,8 @@
+{
+    "errorMessages": {
+        "requestError": "404: The requested URL was not found on this server. Please try again.",
+        "serverError": "500: Internal Server  Please try again.",
+        "networkError": "Network problem. Please check your internet connection and try again.",
+        "unknownError": "Unknown Error. Please try again."
+    }
+}
