@@ -57,7 +57,7 @@ export default () => {
       debug: true,
       lng: 'en',
       backend: {
-        loadPath: '/locales/en/translation.json',
+        loadPath: './locales/{{lng}}/translation.json',
       },
       fallbackLng: 'en',
       keySeparator: '.',
@@ -77,10 +77,13 @@ export default () => {
               const errorStatus = err.response.status;
               switch (errorStatus) {
                 case 404:
-                  state.errorMessage = t('errorMessages.requestError');
+                  state.errorMessage = t('errorMessages.error404');
+                  break;
+                case 406:
+                  state.errorMessage = t('errorMessages.error406');
                   break;
                 case 500:
-                  state.errorMessage = t('errorMessages.serverError');
+                  state.errorMessage = t('errorMessages.error500');
                   break;
                 default:
                   state.errorMessage = t('errorMessages.unknownError');
