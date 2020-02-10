@@ -40,15 +40,25 @@ const createFeed = (title, description, itemsColl) => {
   body.append(divFeed);
 };
 
-
+// => one render function for all errors?
 const createMessage = (resultMessage) => {
   if (document.querySelector('.message')) {
     document.querySelector('.message').remove();
   }
   const divMessage = document.createElement('div');
-  divMessage.classList.add('message', 'container', 'invalid-feedback', 'd-block');
+  divMessage.classList.add('message', 'container', 'd-block', 'mt-2', 'invalid-feedback');
   divMessage.innerText = resultMessage;
   message.append(divMessage);
+};
+
+const createErrorMessage = (errorMessage) => {
+  if (document.querySelector('.message')) {
+    document.querySelector('.message').remove();
+  }
+  const divErrorMessage = document.createElement('div');
+  divErrorMessage.classList.add('message', 'container', 'd-block', 'mt-2', 'alert-danger');
+  divErrorMessage.innerText = errorMessage;
+  message.append(divErrorMessage);
 };
 
 
@@ -60,12 +70,10 @@ const render = (state) => {
       button.disabled = !form.validationState; // => false
       inputForm.classList.remove('is-invalid');
       inputForm.classList.add('is-valid');
-      createMessage(state.validateResultMessage);
     } else {
       button.disabled = !form.validationState; // => true
       inputForm.classList.remove('is-valid');
       inputForm.classList.add('is-invalid');
-      createMessage(state.validateResultMessage);
     }
   });
 
@@ -79,6 +87,14 @@ const render = (state) => {
       }
       button.disabled = true;
     }
+  });
+
+  watch(state, 'validateResultMessage', () => {
+    createMessage(state.validateResultMessage);
+  });
+
+  watch(state, 'errorMessage', () => {
+    createErrorMessage(state.errorMessage);
   });
 
   watch(feed, 'currentPosts', () => {
