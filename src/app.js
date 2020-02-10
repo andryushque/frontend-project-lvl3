@@ -57,7 +57,7 @@ export default () => {
       debug: true,
       lng: 'en',
       backend: {
-        loadPath: '../../locales/en/translation.json',
+        loadPath: '/locales/en/translation.json',
       },
       fallbackLng: 'en',
       keySeparator: '.',
