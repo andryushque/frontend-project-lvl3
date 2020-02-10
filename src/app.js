@@ -2,6 +2,8 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import * as yup from 'yup';
 import axios from 'axios';
+import i18next from 'i18next';
+import backend from 'i18next-xhr-backend';
 import render from './renders';
 import parse from './parser';
 
@@ -19,22 +21,11 @@ const state = {
   errorMessage: '',
 };
 
-const errorMessages = {
-  requestError: '404: The requested URL was not found on this server. Please try again.',
-  serverError: '500: Internal Server Error. Please try again.',
-  networkError: 'Network problem. Please check your internet connection and try again.',
-  unknownError: 'Unknown Error. Please try again.',
-};
-
 export default () => {
   const inputForm = document.getElementById('url');
   const button = document.querySelector('.btn');
 
-  const checkoutFeedUrlSchema = yup
-    .string()
-    .url()
-    .required();
-
+  const checkoutFeedUrlSchema = yup.string().url().required();
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
   const isUrlDuplicated = (url) => state.urlList.includes(url);
 
@@ -62,33 +53,47 @@ export default () => {
     const proxy = 'cors-anywhere.herokuapp.com';
     const link = `https://${proxy}/${url}`;
 
-    axios.get(link)
-      .then((response) => {
-        const feedData = parse(response.data);
-        state.feed.currentPosts = feedData;
-      })
-      .then()
-      .catch((err) => {
-        if (err.message === 'Network Error') {
-          state.errorMessage = errorMessages.networkError;
-        } else if (err.response) {
-          const errorStatus = err.response.status;
-          switch (errorStatus) { // => add later: 406
-            case 404:
-              state.errorMessage = errorMessages.requestError;
-              break;
-            case 500:
-              state.errorMessage = errorMessages.serverError;
-              break;
-            default:
-              state.errorMessage = errorMessages.unknownError;
-          }
-        } else {
-          state.errorMessage = errorMessages.unknownError;
-        }
+    const options = {
+      debug: true,
+      lng: 'en',
+      backend: {
+        loadPath: '../src/locales/en/translation.json',
+      },
+      fallbackLng: 'en',
+      keySeparator: '.',
+    };
+
+    i18next.use(backend).init(options)
+      .then((t) => {
+        axios.get(link)
+          .then((response) => {
+            const feedData = parse(response.data);
+            state.feed.currentPosts = feedData;
+          })
+          .catch((err) => {
+            if (err.message === 'Network Error') {
+              state.errorMessage = t('errorMessages.networkError');
+            } else if (err.response) {
+              const errorStatus = err.response.status;
+              switch (errorStatus) {
+                case 404:
+                  state.errorMessage = t('errorMessages.requestError');
+                  break;
+                case 500:
+                  state.errorMessage = t('errorMessages.serverError');
+                  break;
+                default:
+                  state.errorMessage = t('errorMessages.unknownError');
+              }
+            } else {
+              state.errorMessage = t('errorMessages.unknownError');
+            }
+          });
+        state.form.inputProcessState = 'done';
       });
-    state.form.inputProcessState = 'done';
   });
 
   render(state);
 };
+
+// => add later: more errors (406), russian language, setTimeout
