@@ -16,6 +16,14 @@ const state = {
   },
   urlList: [],
   validateResultMessage: '',
+  errorMessage: '',
+};
+
+const errorsMessages = {
+  requestError: '404: The requested URL was not found on this server. Please try again.',
+  serverError: '500: Internal Server Error. Please try again.',
+  networkError: 'Network problem. Please check your internet connection and try again.',
+  unknownError: 'Unknown Error. Please try again.',
 };
 
 export default () => {
@@ -24,17 +32,17 @@ export default () => {
 
   const checkoutFeedUrlSchema = yup
     .string()
-    .url('Please enter a valid URL address.')
-    .required('This field is required.');
+    .url()
+    .required();
 
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
   const isUrlDuplicated = (url) => state.urlList.includes(url);
 
   inputForm.addEventListener('input', (e) => {
     state.form.inputedUrl = e.target.value;
-
+    state.errorMessage = '';
     isUrlValid(state.form.inputedUrl).then((valid) => {
-      if (valid && state.form.inputedUrl && !isUrlDuplicated(state.form.inputedUrl)) {
+      if (valid && !isUrlDuplicated(state.form.inputedUrl)) {
         state.form.validationState = true;
         state.validateResultMessage = '';
       } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
@@ -59,8 +67,26 @@ export default () => {
         const feedData = parse(response.data);
         state.feed.currentPosts = feedData;
       })
-      .catch(console.log);
-
+      .then()
+      .catch((err) => {
+        if (err.message === 'Network Error') {
+          state.errorMessage = errorsMessages.networkError;
+        } else if (err.response) {
+          const errorStatus = err.response.status;
+          switch (errorStatus) { // => add later: 406
+            case 404:
+              state.errorMessage = errorsMessages.requestError;
+              break;
+            case 500:
+              state.errorMessage = errorsMessages.serverError;
+              break;
+            default:
+              state.errorMessage = errorsMessages.unknownError;
+          }
+        } else {
+          state.errorMessage = errorsMessages.unknownError;
+        }
+      });
     state.form.inputProcessState = 'done';
   });
 
