@@ -67,8 +67,7 @@ const render = (state) => {
 
   watch(form, 'inputProcessState', () => {
     if (form.inputProcessState === 'done') {
-      inputForm.classList.remove('is-valid');
-      inputForm.classList.remove('is-invalid');
+      inputForm.classList.remove('is-valid', 'is-invalid');
       inputForm.value = '';
       button.disabled = true;
       if (document.querySelector('.errorMessage')) {
