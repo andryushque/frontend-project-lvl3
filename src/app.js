@@ -5,7 +5,7 @@ import axios from 'axios';
 import i18next from 'i18next';
 import render from './renders';
 import parse from './parser';
-import translationEN from '../locales/en/translation.json';
+import translationEN from './locales/en/translation.json';
 
 const state = {
   form: {
