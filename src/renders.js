@@ -55,15 +55,14 @@ const render = (state) => {
   const { form, feed } = state;
 
   watch(form, 'validationState', () => {
+    button.disabled = !form.validationState;
     if (form.validationState) {
-      button.disabled = !form.validationState; // => false
       inputForm.classList.remove('is-invalid');
       inputForm.classList.add('is-valid');
     } else {
-      button.disabled = !form.validationState; // => true
       inputForm.classList.remove('is-valid');
       inputForm.classList.add('is-invalid');
-    }
+    };
   });
 
   watch(form, 'inputProcessState', () => {
