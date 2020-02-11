@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import axios from 'axios';
 import i18next from 'i18next';
 import backend from 'i18next-xhr-backend';
+import path from 'path';
 import render from './renders';
 import parse from './parser';
 
@@ -33,7 +34,7 @@ export default () => {
     debug: true,
     lng: 'en',
     backend: {
-      loadPath: './locales/{{lng}}/translation.json',
+      loadPath: path.resolve(__dirname, '/locales/{{lng}}/translation.json'),
     },
     fallbackLng: 'en',
     keySeparator: '.',
