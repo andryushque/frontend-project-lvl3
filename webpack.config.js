@@ -24,7 +24,9 @@ module.exports = {
     ],
   },
   devServer: {
-    port: 3000,
+    contentBase: path.join(__dirname, 'public'),
+    compress: true,
+    port: 9000,
   },
   plugins: [
     new HtmlWebpackPlugin({
