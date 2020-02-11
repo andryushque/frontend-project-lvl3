@@ -6,7 +6,7 @@
         "networkError": "Network problem. Please check your internet connection and try again.",
         "unknownError": "Unknown Error. Please try again."
     },
-    "validateMessages": {
+    "validateResultMessages": {
         "invalidUrl": "This URL is invalid.",
         "addedUrl": "This URL is already added."
     }

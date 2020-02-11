@@ -51,10 +51,10 @@ export default () => {
           state.form.validationState = true;
           state.validateResultMessage = '';
         } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
-          state.validateResultMessage = t('validateMessages.addedUrl');
+          state.validateResultMessage = t('validateResultMessages.addedUrl');
           state.form.validationState = false;
         } else {
-          state.validateResultMessage = t('validateMessages.invalidUrl');
+          state.validateResultMessage = t('validateResultMessages.invalidUrl');
           state.form.validationState = false;
         }
       });

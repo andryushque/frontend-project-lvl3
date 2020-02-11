@@ -5,7 +5,7 @@ const inputForm = document.getElementById('url');
 const button = document.querySelector('.btn');
 const message = document.getElementById('message');
 
-const createFeed = (title, description, itemsColl) => {
+const renderFeed = (title, description, itemsColl) => {
   const divFeed = document.createElement('div');
   divFeed.classList.add('container', 'd-flex', 'mb-4');
 
@@ -24,7 +24,6 @@ const createFeed = (title, description, itemsColl) => {
   divFeedInfo.append(feedTitle, feedDescription);
 
   const items = Object.values(itemsColl);
-  // items.length = 5; // => limit?
   items.forEach((item) => {
     const { postTitle, postLink } = item;
     const li = document.createElement('li');
@@ -41,7 +40,7 @@ const createFeed = (title, description, itemsColl) => {
 };
 
 
-const createErrorMessage = (errorMessage, feedbackTypeClass) => {
+const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
   if (document.querySelector('.errorMessage')) {
     document.querySelector('.errorMessage').remove();
   }
@@ -80,18 +79,18 @@ const render = (state) => {
   });
 
   watch(state, 'validateResultMessage', () => {
-    createErrorMessage(state.validateResultMessage, 'invalid-feedback');
+    renderErrorMessage(state.validateResultMessage, 'invalid-feedback');
   });
 
   watch(state, 'errorMessage', () => {
-    createErrorMessage(state.errorMessage, 'alert-danger');
+    renderErrorMessage(state.errorMessage, 'alert-danger');
   });
 
   watch(feed, 'currentPosts', () => {
     const currentTitle = feed.currentPosts.title;
     const currentDescription = feed.currentPosts.description;
     const currentFeedPosts = feed.currentPosts.feedPosts;
-    createFeed(currentTitle, currentDescription, currentFeedPosts);
+    renderFeed(currentTitle, currentDescription, currentFeedPosts);
   });
 };
 
