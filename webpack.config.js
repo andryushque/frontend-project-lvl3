@@ -24,13 +24,15 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: path.join(__dirname, 'public'),
-    compress: true,
-    port: 9000,
+    contentBase: './public',
+    publicPath: '/',
+    host: '127.0.0.1',
+    port: 8080,
+    open: true,
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: 'src/index.html',
+      template: './src/index.html',
     }),
   ],
 };
