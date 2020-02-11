@@ -62,7 +62,7 @@ const render = (state) => {
     } else {
       inputForm.classList.remove('is-valid');
       inputForm.classList.add('is-invalid');
-    };
+    }
   });
 
   watch(form, 'inputProcessState', () => {
