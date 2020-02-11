@@ -29,6 +29,16 @@ export default () => {
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
   const isUrlDuplicated = (url) => state.urlList.includes(url);
 
+  const options = {
+    debug: true,
+    lng: 'en',
+    backend: {
+      loadPath: './locales/{{lng}}/translation.json',
+    },
+    fallbackLng: 'en',
+    keySeparator: '.',
+  };
+
   inputForm.addEventListener('input', (e) => {
     state.form.inputedUrl = e.target.value;
     state.errorMessage = '';
@@ -37,11 +47,17 @@ export default () => {
         state.form.validationState = true;
         state.validateResultMessage = '';
       } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
+        i18next.use(backend).init(options)
+          .then((t) => {
+            state.validateResultMessage = t('validateMessages.addedUrl');
+          });
         state.form.validationState = false;
-        state.validateResultMessage = 'This URL is already added';
       } else {
+        i18next.use(backend).init(options)
+          .then((t) => {
+            state.validateResultMessage = t('validateMessages.invalidUrl');
+          });
         state.form.validationState = false;
-        state.validateResultMessage = 'This URL is invalid';
       }
     });
     state.form.inputProcessState = 'inProcess';
@@ -52,16 +68,6 @@ export default () => {
     state.urlList.push(url);
     const proxy = 'cors-anywhere.herokuapp.com';
     const link = `https://${proxy}/${url}`;
-
-    const options = {
-      debug: true,
-      lng: 'en',
-      backend: {
-        loadPath: './locales/{{lng}}/translation.json',
-      },
-      fallbackLng: 'en',
-      keySeparator: '.',
-    };
 
     i18next.use(backend).init(options)
       .then((t) => {
@@ -98,5 +104,3 @@ export default () => {
 
   render(state);
 };
-
-// => add later: more errors (406), russian language, setTimeout

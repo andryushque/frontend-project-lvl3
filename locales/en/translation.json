@@ -5,5 +5,9 @@
         "error500": "500: Internal Server  Please try again.",
         "networkError": "Network problem. Please check your internet connection and try again.",
         "unknownError": "Unknown Error. Please try again."
+    },
+    "validateMessages": {
+        "invalidUrl": "This URL is invalid.",
+        "addedUrl": "This URL is already added."
     }
 }
