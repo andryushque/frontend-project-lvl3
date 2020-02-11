@@ -1,4 +1,4 @@
-name: rss news feed build
+name: build
 
 on:
   push:
