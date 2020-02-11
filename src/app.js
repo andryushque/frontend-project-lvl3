@@ -44,23 +44,20 @@ export default () => {
   inputForm.addEventListener('input', (e) => {
     state.form.inputedUrl = e.target.value;
     state.errorMessage = '';
+
     isUrlValid(state.form.inputedUrl).then((valid) => {
-      if (valid && !isUrlDuplicated(state.form.inputedUrl)) {
-        state.form.validationState = true;
-        state.validateResultMessage = '';
-      } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
-        i18next.init(options)
-          .then((t) => {
-            state.validateResultMessage = t('validateMessages.addedUrl');
-          });
-        state.form.validationState = false;
-      } else {
-        i18next.init(options)
-          .then((t) => {
-            state.validateResultMessage = t('validateMessages.invalidUrl');
-          });
-        state.form.validationState = false;
-      }
+      i18next.init(options).then((t) => {
+        if (valid && !isUrlDuplicated(state.form.inputedUrl)) {
+          state.form.validationState = true;
+          state.validateResultMessage = '';
+        } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
+          state.validateResultMessage = t('validateMessages.addedUrl');
+          state.form.validationState = false;
+        } else {
+          state.validateResultMessage = t('validateMessages.invalidUrl');
+          state.form.validationState = false;
+        }
+      });
     });
     state.form.inputProcessState = 'inProcess';
   });
