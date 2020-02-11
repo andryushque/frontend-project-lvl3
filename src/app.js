@@ -3,10 +3,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import * as yup from 'yup';
 import axios from 'axios';
 import i18next from 'i18next';
-import backend from 'i18next-xhr-backend';
-import path from 'path';
 import render from './renders';
 import parse from './parser';
+import translationEN from '../locales/en/translation.json';
 
 const state = {
   form: {
@@ -30,12 +29,14 @@ export default () => {
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
   const isUrlDuplicated = (url) => state.urlList.includes(url);
 
+  const resources = {
+    en: { translation: translationEN },
+  };
+
   const options = {
     debug: true,
     lng: 'en',
-    backend: {
-      loadPath: path.resolve(__dirname, '/locales/{{lng}}/translation.json'),
-    },
+    resources,
     fallbackLng: 'en',
     keySeparator: '.',
   };
@@ -48,13 +49,13 @@ export default () => {
         state.form.validationState = true;
         state.validateResultMessage = '';
       } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
-        i18next.use(backend).init(options)
+        i18next.init(options)
           .then((t) => {
             state.validateResultMessage = t('validateMessages.addedUrl');
           });
         state.form.validationState = false;
       } else {
-        i18next.use(backend).init(options)
+        i18next.init(options)
           .then((t) => {
             state.validateResultMessage = t('validateMessages.invalidUrl');
           });
@@ -70,7 +71,7 @@ export default () => {
     const proxy = 'cors-anywhere.herokuapp.com';
     const link = `https://${proxy}/${url}`;
 
-    i18next.use(backend).init(options)
+    i18next.init(options)
       .then((t) => {
         axios.get(link)
           .then((response) => {
