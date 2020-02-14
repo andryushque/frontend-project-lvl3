@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import * as yup from 'yup';
 import axios from 'axios';
 import i18next from 'i18next';
+// import _ from 'lodash';
 import render from './renders';
 import parse from './parser';
 import translationEN from './locales/en/translation.json';
@@ -10,11 +11,13 @@ import translationEN from './locales/en/translation.json';
 const state = {
   form: {
     inputProcessState: 'inProcess',
-    validationState: true,
+    validationState: true, // valid
     inputedUrl: '',
   },
   feed: {
     currentPosts: [],
+    allPosts: [],
+    newPosts: [],
   },
   urlList: [],
   validateResultMessage: '',
@@ -28,6 +31,8 @@ export default () => {
   const checkoutFeedUrlSchema = yup.string().url().required();
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
   const isUrlDuplicated = (url) => state.urlList.includes(url);
+
+  const proxy = 'cors-anywhere.herokuapp.com';
 
   const resources = {
     en: { translation: translationEN },
@@ -65,7 +70,6 @@ export default () => {
   button.addEventListener('click', () => {
     const url = state.form.inputedUrl;
     state.urlList.push(url);
-    const proxy = 'cors-anywhere.herokuapp.com';
     const link = `https://${proxy}/${url}`;
 
     i18next.init(options)
@@ -73,7 +77,13 @@ export default () => {
         axios.get(link)
           .then((response) => {
             const feedData = parse(response.data);
+            const { feedPosts } = feedData;
             state.feed.currentPosts = feedData;
+            feedPosts.map((post) => {
+              const feedPost = { postTitle: post.postTitle, postLink: post.postLink };
+              state.feed.allPosts = [...state.feed.allPosts, feedPost];
+              return state.feed.allPosts;
+            });
           })
           .catch((err) => {
             if (err.message === 'Network Error') {
@@ -101,5 +111,29 @@ export default () => {
       });
   });
 
+  const updateFeed = () => {
+    state.feed.newPosts = [];
+    const feedUrls = state.urlList;
+    const currentFeedData = state.feed.allPosts;
+    const currentPostsLink = [];
+    currentFeedData.forEach((post) => currentPostsLink.push(post.postLink));
+
+    feedUrls.forEach((url) => {
+      const link = `https://${proxy}/${url}`;
+      axios.get(link).then((response) => {
+        const { feedPosts } = parse(response.data);
+        feedPosts.filter((post) => !currentPostsLink.includes(post.postLink))
+          .forEach((post) => {
+            const feedPost = { postTitle: post.postTitle, postLink: post.postLink };
+            state.feed.newPosts.push(feedPost);
+            state.feed.allPosts.push(feedPost);
+          });
+        // console.log('newPosts', state.feed.newPosts);
+        // console.log('allPosts', state.feed.allPosts);
+      });
+    });
+    setTimeout(updateFeed, 5000);
+  };
+  updateFeed();
   render(state);
 };
