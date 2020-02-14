@@ -1,27 +1,24 @@
 import { watch } from 'melanke-watchjs';
+import _ from 'lodash';
 
-const body = document.querySelector('body');
+// const body = document.querySelector('body');
 const inputForm = document.getElementById('url');
 const button = document.querySelector('.btn');
 const message = document.getElementById('message');
+const ulFeedList = document.querySelector('.feedList');
+const divFeedPosts = document.querySelector('.feedPosts');
 
 const renderFeed = (title, description, itemsColl) => {
-  const divFeed = document.createElement('div');
-  divFeed.classList.add('container', 'd-flex', 'mb-4');
-
-  const divFeedInfo = document.createElement('div');
-  divFeedInfo.classList.add('col-3');
-
-  const divFeedPost = document.createElement('div');
-  divFeedPost.classList.add('col-9');
-
-  const feedTitle = document.createElement('h4');
+  const feedTitle = document.createElement('h5');
   feedTitle.innerText = title;
-
-  const feedDescription = document.createElement('p');
+  const feedDescription = document.createElement('h6');
   feedDescription.innerText = description;
 
-  divFeedInfo.append(feedTitle, feedDescription);
+  const feedList = document.createElement('li');
+  const hr = document.createElement('hr');
+  feedList.classList.add('mb-4');
+  feedList.append(feedTitle, feedDescription);
+  ulFeedList.append(feedList, hr);
 
   const items = Object.values(itemsColl);
   items.forEach((item) => {
@@ -30,15 +27,27 @@ const renderFeed = (title, description, itemsColl) => {
     const urlLink = document.createElement('a');
     urlLink.href = postLink;
     urlLink.innerText = postTitle;
+    li.id = _.uniqueId('post_');
+    li.classList.add('feedPost');
 
     li.append(urlLink);
-    divFeedPost.append(li);
+    divFeedPosts.append(li);
   });
-
-  divFeed.append(divFeedInfo, divFeedPost);
-  body.append(divFeed);
 };
 
+const renderUpdatedFeed = (newPosts) => { // state.feed.newPosts
+  newPosts.forEach((item) => {
+    const { postTitle, postLink } = item;
+    const li = document.createElement('li');
+    const urlLink = document.createElement('a');
+    urlLink.href = postLink;
+    urlLink.innerText = postTitle;
+    li.id = _.uniqueId('newPost_');
+
+    li.append(urlLink);
+    divFeedPosts.prepend(li);
+  });
+};
 
 const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
   if (document.querySelector('.errorMessage')) {
@@ -85,10 +94,14 @@ const render = (state) => {
   });
 
   watch(feed, 'currentPosts', () => {
-    const currentTitle = feed.currentPosts.title;
-    const currentDescription = feed.currentPosts.description;
+    const currentTitle = feed.currentPosts.feedInfo.feedTitle;
+    const currentDescription = feed.currentPosts.feedInfo.feedDescription;
     const currentFeedPosts = feed.currentPosts.feedPosts;
     renderFeed(currentTitle, currentDescription, currentFeedPosts);
+  });
+
+  watch(feed, 'newPosts', () => {
+    renderUpdatedFeed(feed.newPosts);
   });
 };
 
