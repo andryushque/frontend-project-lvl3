@@ -13,12 +13,12 @@
 <main role="main" class="bg-light">
 
     <!-- RSS input field -->
-    <div class="jumbotron jumbotron-fluid p-4 m-0 bg-light">
+    <div class="jumbotron jumbotron-fluid p-2 m-0 bg-light">
         <div class="container">
            <h1 class="display-8">RSS News Feed</h1>
             <form id="form">
                 <div class="input-group input-group-lg mb-4" id="message">
-                    <input id="url" type="text" class="form-control" placeholder="RSS address">
+                    <input id="url" type="search" class="form-control" placeholder="RSS address">
                 </div>
                 <div class="container d-flex p-0">
                     <div class="p-0">
@@ -30,15 +30,16 @@
         </div>
     </div> <!-- /.jumbotron -->
 
-    <!-- RSS examples -->
-    <div class="container p-0">
-        <ul>
-            <li><a href="https://ru.hexlet.io/blog.rss">https://ru.hexlet.io/blog.rss</a></li>
-            <li><a href="https://meduza.io/rss/all">https://meduza.io/rss/all</a></li>
-            <li><a href="https://dtf.ru/rss">https://dtf.ru/rss</a></li>
-            <li><a href="https://www.sports.ru/rss/topnews/football.xml">https://www.sports.ru/rss/topnews/football.xml</a></li>
-        </ul>
-        <hr>
+    <!-- Feed -->
+    <div class="container d-flex p-0 mb-4">
+        <div class="col-4">
+            <hr>
+            <ul class="feedList list-unstyled">
+            </ul>
+        </div>
+        <div class="col-8 feedPosts">
+            <hr>
+        </div>
     </div>
 
 </main>
