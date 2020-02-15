@@ -30,7 +30,6 @@ const renderFeed = (title, description, posts) => {
     postItemLink.innerText = postTitle;
     postItem.id = _.uniqueId('post_');
     postItem.classList.add('feedPost');
-
     postItem.append(postItemLink);
     feedPostsList.append(postItem);
   });
@@ -62,7 +61,6 @@ const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
   errorMessageContainer.innerText = errorMessage;
   message.append(errorMessageContainer);
 };
-
 
 const render = (state) => {
   const { form, feed } = state;

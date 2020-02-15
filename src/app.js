@@ -64,6 +64,7 @@ export default () => {
         }
       });
     });
+
     state.form.inputProcessState = 'inProcess';
   });
 
