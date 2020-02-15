@@ -123,11 +123,11 @@ export default () => {
         const newFeedPosts = [];
         feedPosts.forEach((feedPost) => {
           if (!allFeedPostsLinks.includes(feedPost.postLink)) {
-            newArticles.push(feedPost);
+            newFeedPosts.push(feedPost);
           }
           return newFeedPosts;
         });
-        state.feed.allPosts = [...state.feed.allPosts, ...newArticles];
+        state.feed.allPosts = [...state.feed.allPosts, ...newFeedPosts];
         state.feed.allPostsCount = state.feed.allPosts.length;
         state.feed.newPosts = [...newFeedPosts];
       });
