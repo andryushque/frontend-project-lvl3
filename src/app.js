@@ -52,20 +52,17 @@ export default () => {
 
     isUrlValid(state.form.inputedUrl).then((valid) => {
       i18next.init(options).then((t) => {
+        state.form.inputProcessState = 'filling';
         if (valid && !isUrlDuplicated(state.form.inputedUrl)) {
-          state.form.inputProcessState = 'filling';
           state.validateResultMessage = '';
           state.form.validationState = 'valid';
         } else if (state.form.inputedUrl === '') {
-          state.form.inputProcessState = 'filling';
           state.form.validationState = 'notValidated';
           state.validateResultMessage = '';
         } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
-          state.form.inputProcessState = 'filling';
           state.validateResultMessage = t('validateResultMessages.addedUrl');
           state.form.validationState = 'invalid';
         } else {
-          state.form.inputProcessState = 'filling';
           state.validateResultMessage = t('validateResultMessages.invalidUrl');
           state.form.validationState = 'invalid';
         }
@@ -136,7 +133,7 @@ export default () => {
         });
         state.feed.allPosts = [...state.feed.allPosts, ...newFeedPosts];
         state.feed.allPostsCount = state.feed.allPosts.length;
-        state.feed.newPosts = [...newFeedPosts];
+        state.feed.newPosts = [...newFeedPosts].reverse();
       });
     });
     setTimeout(updateFeed, 5000);
