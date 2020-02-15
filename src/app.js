@@ -120,16 +120,16 @@ export default () => {
         const allFeedPosts = state.feed.allPosts;
         const allFeedPostsLinks = [];
         allFeedPosts.forEach((post) => allFeedPostsLinks.push(post.postLink));
-        const newArticles = [];
+        const newFeedPosts = [];
         feedPosts.forEach((feedPost) => {
           if (!allFeedPostsLinks.includes(feedPost.postLink)) {
             newArticles.push(feedPost);
           }
-          return newArticles;
+          return newFeedPosts;
         });
         state.feed.allPosts = [...state.feed.allPosts, ...newArticles];
         state.feed.allPostsCount = state.feed.allPosts.length;
-        state.feed.newPosts = [...newArticles];
+        state.feed.newPosts = [...newFeedPosts];
       });
     });
     setTimeout(updateFeed, 5000);
