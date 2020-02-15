@@ -16,7 +16,7 @@ const state = {
   feed: {
     currentPosts: [],
     allPosts: [],
-    postsCount: 0,
+    allPostsCount: 0,
     newPosts: [],
   },
   urlList: [],
@@ -80,7 +80,7 @@ export default () => {
             const { feedPosts } = feedData;
             state.feed.currentPosts = feedData;
             state.feed.allPosts = [...state.feed.allPosts, ...feedPosts];
-            state.feed.postsCount = state.feed.allPosts.length;
+            state.feed.allPostsCount = state.feed.allPosts.length;
           })
           .catch((err) => {
             if (err.message === 'Network Error') {
@@ -109,31 +109,32 @@ export default () => {
   });
 
   const updateFeed = () => {
-    const feedUrls = state.urlList;
+    const feedUrlList = state.urlList;
     state.feed.newPosts = [];
-    feedUrls.forEach((url) => {
+    feedUrlList.forEach((url) => {
       const link = `https://${proxy}/${url}`;
       axios.get(link).then((response) => {
         const { feedPosts } = parse(response.data);
         return feedPosts;
       }).then((feedPosts) => {
-        const currentFeedData = state.feed.allPosts;
-        const currentPostsLink = [];
-        currentFeedData.forEach((post) => currentPostsLink.push(post.postLink));
+        const allFeedPosts = state.feed.allPosts;
+        const allFeedPostsLinks = [];
+        allFeedPosts.forEach((post) => allFeedPostsLinks.push(post.postLink));
         const newArticles = [];
         feedPosts.forEach((feedPost) => {
-          if (!currentPostsLink.includes(feedPost.postLink)) {
+          if (!allFeedPostsLinks.includes(feedPost.postLink)) {
             newArticles.push(feedPost);
           }
           return newArticles;
         });
         state.feed.allPosts = [...state.feed.allPosts, ...newArticles];
-        state.feed.postsCount = state.feed.allPosts.length;
+        state.feed.allPostsCount = state.feed.allPosts.length;
         state.feed.newPosts = [...newArticles];
       });
     });
     setTimeout(updateFeed, 5000);
   };
+
   updateFeed();
   render(state);
 };

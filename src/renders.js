@@ -4,11 +4,11 @@ import _ from 'lodash';
 const inputForm = document.getElementById('url');
 const button = document.querySelector('.btn');
 const message = document.getElementById('message');
-const ulFeedList = document.querySelector('.feedList');
-const divFeedPosts = document.querySelector('.feedPosts');
-const postsCount = document.querySelector('.count');
+const feedChannelsList = document.querySelector('.feedChannelsList');
+const feedPostsList = document.querySelector('.feedPostsList');
+const feedPostsCount = document.querySelector('.count');
 
-const renderFeed = (title, description, itemsColl) => {
+const renderFeed = (title, description, posts) => {
   const feedTitle = document.createElement('h5');
   feedTitle.innerText = title;
   const feedDescription = document.createElement('h6');
@@ -18,48 +18,48 @@ const renderFeed = (title, description, itemsColl) => {
   const hr = document.createElement('hr');
   feedList.classList.add('mb-4');
   feedList.append(feedTitle, feedDescription);
-  ulFeedList.append(feedList, hr);
+  feedChannelsList.append(feedList, hr);
 
-  const items = Object.values(itemsColl);
-  items.forEach((item) => {
-    const { postTitle, postLink } = item;
-    const li = document.createElement('li');
-    const urlLink = document.createElement('a');
-    urlLink.href = postLink;
-    urlLink.innerText = postTitle;
-    li.id = _.uniqueId('post_');
-    li.classList.add('feedPost');
+  const feedPosts = Object.values(posts);
+  feedPosts.forEach((post) => {
+    const { postTitle, postLink } = post;
+    const postItem = document.createElement('li');
+    const postItemLink = document.createElement('a');
+    postItemLink.href = postLink;
+    postItemLink.innerText = postTitle;
+    postItem.id = _.uniqueId('post_');
+    postItem.classList.add('feedPost');
 
-    li.append(urlLink);
-    divFeedPosts.append(li);
+    postItem.append(postItemLink);
+    feedPostsList.append(postItem);
   });
 };
 
 const renderUpdatedFeed = (newPosts) => {
-  newPosts.forEach((item) => {
-    const { postTitle, postLink } = item;
-    const li = document.createElement('li');
-    const urlLink = document.createElement('a');
-    urlLink.href = postLink;
-    urlLink.innerText = postTitle;
-    li.id = _.uniqueId('post_');
-    li.append(urlLink);
-    divFeedPosts.prepend(li);
+  newPosts.forEach((newPost) => {
+    const { postTitle, postLink } = newPost;
+    const newPostItem = document.createElement('li');
+    const newPostItemLink = document.createElement('a');
+    newPostItemLink.href = postLink;
+    newPostItemLink.innerText = postTitle;
+    newPostItem.id = _.uniqueId('post_');
+    newPostItem.append(newPostItemLink);
+    feedPostsList.prepend(newPostItem);
   });
 };
 
-const renderFeedCount = (count) => {
-  postsCount.innerText = count;
+const renderFeedPostsCount = (count) => {
+  feedPostsCount.innerText = count;
 };
 
 const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
   if (document.querySelector('.errorMessage')) {
     document.querySelector('.errorMessage').remove();
   }
-  const divErrorMessage = document.createElement('div');
-  divErrorMessage.classList.add('errorMessage', 'container', 'd-block', 'mt-2', feedbackTypeClass);
-  divErrorMessage.innerText = errorMessage;
-  message.append(divErrorMessage);
+  const errorMessageContainer = document.createElement('div');
+  errorMessageContainer.classList.add('errorMessage', 'container', 'd-block', 'mt-2', feedbackTypeClass);
+  errorMessageContainer.innerText = errorMessage;
+  message.append(errorMessageContainer);
 };
 
 
@@ -97,18 +97,18 @@ const render = (state) => {
   });
 
   watch(feed, 'currentPosts', () => {
-    const currentTitle = feed.currentPosts.feedInfo.feedTitle;
-    const currentDescription = feed.currentPosts.feedInfo.feedDescription;
+    const currentFeedTitle = feed.currentPosts.feedInfo.feedTitle;
+    const currentFeedDescription = feed.currentPosts.feedInfo.feedDescription;
     const currentFeedPosts = feed.currentPosts.feedPosts;
-    renderFeed(currentTitle, currentDescription, currentFeedPosts);
+    renderFeed(currentFeedTitle, currentFeedDescription, currentFeedPosts);
   });
 
   watch(feed, 'newPosts', () => {
     renderUpdatedFeed(feed.newPosts);
   });
 
-  watch(feed, 'postsCount', () => {
-    renderFeedCount(feed.postsCount);
+  watch(feed, 'allPostsCount', () => {
+    renderFeedPostsCount(feed.allPostsCount);
   });
 };
 

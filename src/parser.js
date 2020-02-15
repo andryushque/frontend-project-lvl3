@@ -7,10 +7,10 @@ const parse = (data) => {
   const feedInfo = { feedTitle, feedDescription };
 
   const feedPosts = [];
-  const items = parsedData.querySelectorAll('item');
-  items.forEach((item) => {
-    const postTitle = item.querySelector('title').textContent;
-    const postLink = item.querySelector('link').textContent;
+  const postItems = parsedData.querySelectorAll('item');
+  postItems.forEach((postItem) => {
+    const postTitle = postItem.querySelector('title').textContent;
+    const postLink = postItem.querySelector('link').textContent;
     const feedPost = { postTitle, postLink };
     feedPosts.push(feedPost);
   });
