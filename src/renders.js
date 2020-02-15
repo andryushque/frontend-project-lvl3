@@ -11,10 +11,11 @@ const feedPostsCount = document.querySelector('.count');
 const renderFeed = (title, description, posts) => {
   const feedTitle = document.createElement('h5');
   feedTitle.innerText = title;
-  const feedDescription = document.createElement('h6');
+  const feedDescription = document.createElement('div');
+  feedDescription.classList.add('text-secondary');
   feedDescription.innerText = description;
 
-  const feedList = document.createElement('li');
+  const feedList = document.createElement('div');
   const hr = document.createElement('hr');
   feedList.classList.add('mb-4');
   feedList.append(feedTitle, feedDescription);
