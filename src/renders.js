@@ -73,14 +73,21 @@ const render = (state) => {
       inputForm.classList.remove('is-valid', 'is-invalid');
       inputForm.value = '';
       button.disabled = true;
-    } else if (form.inputProcessState === 'filling') {
-      button.disabled = !form.validationState;
-      if (form.validationState) {
-        inputForm.classList.remove('is-invalid');
-        inputForm.classList.add('is-valid');
-      } else {
-        inputForm.classList.remove('is-valid');
-        inputForm.classList.add('is-invalid');
+    } else {
+      switch (form.validationState) {
+        case 'valid':
+          inputForm.classList.remove('is-invalid');
+          inputForm.classList.add('is-valid');
+          button.disabled = false;
+          break;
+        case 'invalid':
+          inputForm.classList.remove('is-valid');
+          inputForm.classList.add('is-invalid');
+          button.disabled = true;
+          break;
+        default:
+          inputForm.classList.remove('is-valid', 'is-invalid');
+          button.disabled = true;
       }
     }
   });
