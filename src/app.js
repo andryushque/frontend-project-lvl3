@@ -25,8 +25,8 @@ const state = {
 };
 
 export default () => {
-  const inputForm = document.getElementById('url');
-  const button = document.querySelector('.btn');
+  const inputField = document.getElementById('url');
+  const inputForm = document.getElementById('inputForm');
 
   const checkoutFeedUrlSchema = yup.string().url().required();
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
@@ -46,7 +46,7 @@ export default () => {
     keySeparator: '.',
   };
 
-  inputForm.addEventListener('input', (e) => {
+  inputField.addEventListener('input', (e) => {
     state.errorMessage = '';
     state.form.inputedUrl = e.target.value;
 
@@ -73,7 +73,8 @@ export default () => {
     });
   });
 
-  button.addEventListener('click', () => {
+  inputForm.addEventListener('submit', (e) => {
+    e.preventDefault();
     const url = state.form.inputedUrl;
     state.urlList.push(url);
     const link = `https://${proxy}/${url}`;

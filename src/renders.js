@@ -1,7 +1,7 @@
 import { watch } from 'melanke-watchjs';
 import _ from 'lodash';
 
-const inputForm = document.getElementById('url');
+const inputField = document.getElementById('url');
 const button = document.querySelector('.btn');
 const message = document.getElementById('message');
 const feedChannelsList = document.querySelector('.feedChannelsList');
@@ -70,23 +70,23 @@ const render = (state) => {
       if (document.querySelector('.errorMessage')) {
         document.querySelector('.errorMessage').remove();
       }
-      inputForm.classList.remove('is-valid', 'is-invalid');
-      inputForm.value = '';
+      inputField.classList.remove('is-valid', 'is-invalid');
+      inputField.value = '';
       button.disabled = true;
     } else {
       switch (form.validationState) {
         case 'valid':
-          inputForm.classList.remove('is-invalid');
-          inputForm.classList.add('is-valid');
+          inputField.classList.remove('is-invalid');
+          inputField.classList.add('is-valid');
           button.disabled = false;
           break;
         case 'invalid':
-          inputForm.classList.remove('is-valid');
-          inputForm.classList.add('is-invalid');
+          inputField.classList.remove('is-valid');
+          inputField.classList.add('is-invalid');
           button.disabled = true;
           break;
         default:
-          inputForm.classList.remove('is-valid', 'is-invalid');
+          inputField.classList.remove('is-valid', 'is-invalid');
           button.disabled = true;
       }
     }
