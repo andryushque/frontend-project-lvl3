@@ -8,6 +8,7 @@
     },
     "validateResultMessages": {
         "invalidUrl": "This URL is invalid.",
-        "addedUrl": "This URL is already added."
+        "addedUrl": "This URL is already added.",
+        "emptyUrl": "Input field is empty."
     }
 }
