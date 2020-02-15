@@ -38,12 +38,12 @@ const renderFeed = (title, description, posts) => {
 const renderUpdatedFeed = (newPosts) => {
   newPosts.forEach((newPost) => {
     const { postTitle, postLink } = newPost;
-    const newPostItem = document.createElement('li');
     const newPostItemLink = document.createElement('a');
-    newPostItemLink.href = postLink;
+    const newPostItem = document.createElement('li');
     newPostItemLink.innerText = postTitle;
-    newPostItem.id = _.uniqueId('post_');
+    newPostItemLink.href = postLink;
     newPostItem.classList.add('feedPost');
+    newPostItem.id = _.uniqueId('post_');
     newPostItem.append(newPostItemLink);
     feedPostsList.prepend(newPostItem);
   });
@@ -75,6 +75,7 @@ const render = (state) => {
       inputField.value = '';
       button.disabled = true;
     } else {
+      button.disabled = true;
       switch (form.validationState) {
         case 'valid':
           inputField.classList.remove('is-invalid');
@@ -84,11 +85,9 @@ const render = (state) => {
         case 'invalid':
           inputField.classList.remove('is-valid');
           inputField.classList.add('is-invalid');
-          button.disabled = true;
           break;
         default:
           inputField.classList.remove('is-valid', 'is-invalid');
-          button.disabled = true;
       }
     }
   });
