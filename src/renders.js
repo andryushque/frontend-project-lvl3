@@ -1,12 +1,12 @@
 import { watch } from 'melanke-watchjs';
 import _ from 'lodash';
 
-// const body = document.querySelector('body');
 const inputForm = document.getElementById('url');
 const button = document.querySelector('.btn');
 const message = document.getElementById('message');
 const ulFeedList = document.querySelector('.feedList');
 const divFeedPosts = document.querySelector('.feedPosts');
+const postsCount = document.querySelector('.count');
 
 const renderFeed = (title, description, itemsColl) => {
   const feedTitle = document.createElement('h5');
@@ -35,18 +35,21 @@ const renderFeed = (title, description, itemsColl) => {
   });
 };
 
-const renderUpdatedFeed = (newPosts) => { // state.feed.newPosts
+const renderUpdatedFeed = (newPosts) => {
   newPosts.forEach((item) => {
     const { postTitle, postLink } = item;
     const li = document.createElement('li');
     const urlLink = document.createElement('a');
     urlLink.href = postLink;
     urlLink.innerText = postTitle;
-    li.id = _.uniqueId('newPost_');
-
+    li.id = _.uniqueId('post_');
     li.append(urlLink);
     divFeedPosts.prepend(li);
   });
+};
+
+const renderFeedCount = (count) => {
+  postsCount.innerText = count;
 };
 
 const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
@@ -102,6 +105,10 @@ const render = (state) => {
 
   watch(feed, 'newPosts', () => {
     renderUpdatedFeed(feed.newPosts);
+  });
+
+  watch(feed, 'postsCount', () => {
+    renderFeedCount(feed.postsCount);
   });
 };
 
