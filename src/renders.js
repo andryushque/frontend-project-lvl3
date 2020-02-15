@@ -43,6 +43,7 @@ const renderUpdatedFeed = (newPosts) => {
     newPostItemLink.href = postLink;
     newPostItemLink.innerText = postTitle;
     newPostItem.id = _.uniqueId('post_');
+    newPostItem.classList.add('feedPost');
     newPostItem.append(newPostItemLink);
     feedPostsList.prepend(newPostItem);
   });
