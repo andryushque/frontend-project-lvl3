@@ -9,7 +9,7 @@ import translationEN from './locales/en/translation.json';
 
 const state = {
   form: {
-    inputProcessState: 'inProcess', // => inProcess | done
+    inputProcessState: 'filling', // => filling | done
     validationState: true,
     inputedUrl: '',
   },
@@ -47,25 +47,30 @@ export default () => {
   };
 
   inputForm.addEventListener('input', (e) => {
-    state.form.inputedUrl = e.target.value;
     state.errorMessage = '';
+    state.form.inputedUrl = e.target.value;
 
     isUrlValid(state.form.inputedUrl).then((valid) => {
       i18next.init(options).then((t) => {
         if (valid && !isUrlDuplicated(state.form.inputedUrl)) {
           state.form.validationState = true;
           state.validateResultMessage = '';
+          state.form.inputProcessState = 'filling';
+        } else if (state.form.inputedUrl === '') {
+          state.validateResultMessage = t('validateResultMessages.emptyUrl');
+          state.form.validationState = false;
+          state.form.inputProcessState = 'ready';
         } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
           state.validateResultMessage = t('validateResultMessages.addedUrl');
           state.form.validationState = false;
+          state.form.inputProcessState = 'filling';
         } else {
           state.validateResultMessage = t('validateResultMessages.invalidUrl');
           state.form.validationState = false;
+          state.form.inputProcessState = 'filling';
         }
       });
     });
-
-    state.form.inputProcessState = 'inProcess';
   });
 
   button.addEventListener('click', () => {
@@ -105,8 +110,8 @@ export default () => {
               state.errorMessage = t('errorMessages.unknownError');
             }
           });
-        state.form.inputProcessState = 'done';
       });
+    state.form.inputProcessState = 'done';
   });
 
   const updateFeed = () => {

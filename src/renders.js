@@ -65,24 +65,22 @@ const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
 const render = (state) => {
   const { form, feed } = state;
 
-  watch(form, 'validationState', () => {
-    button.disabled = !form.validationState;
-    if (form.validationState) {
-      inputForm.classList.remove('is-invalid');
-      inputForm.classList.add('is-valid');
-    } else {
-      inputForm.classList.remove('is-valid');
-      inputForm.classList.add('is-invalid');
-    }
-  });
-
-  watch(form, 'inputProcessState', () => {
+  watch(state, 'form', () => {
     if (form.inputProcessState === 'done') {
+      if (document.querySelector('.errorMessage')) {
+        document.querySelector('.errorMessage').remove();
+      }
       inputForm.classList.remove('is-valid', 'is-invalid');
       inputForm.value = '';
       button.disabled = true;
-      if (document.querySelector('.errorMessage')) {
-        document.querySelector('.errorMessage').remove();
+    } else if (form.inputProcessState === 'filling') {
+      button.disabled = !form.validationState;
+      if (form.validationState) {
+        inputForm.classList.remove('is-invalid');
+        inputForm.classList.add('is-valid');
+      } else {
+        inputForm.classList.remove('is-valid');
+        inputForm.classList.add('is-invalid');
       }
     }
   });
