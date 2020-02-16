@@ -8,7 +8,7 @@ const feedChannelsList = document.querySelector('.feedChannelsList');
 const feedPostsList = document.querySelector('.feedPostsList');
 const feedPostsCount = document.querySelector('.count');
 
-const renderFeed = (title, description, posts) => {
+const renderfeedChannelsList = (title, description) => {
   const feedTitle = document.createElement('h5');
   feedTitle.innerText = title;
   const feedDescription = document.createElement('div');
@@ -19,33 +19,20 @@ const renderFeed = (title, description, posts) => {
   const hr = document.createElement('hr');
   feedList.classList.add('mb-4');
   feedList.append(feedTitle, feedDescription);
-  feedChannelsList.append(feedList, hr);
-
-  const feedPosts = Object.values(posts);
-  feedPosts.forEach((post) => {
-    const { postTitle, postLink } = post;
-    const postItem = document.createElement('li');
-    const postItemLink = document.createElement('a');
-    postItemLink.href = postLink;
-    postItemLink.innerText = postTitle;
-    postItem.id = _.uniqueId('post_');
-    postItem.classList.add('feedPost');
-    postItem.append(postItemLink);
-    feedPostsList.append(postItem);
-  });
+  feedChannelsList.prepend(feedList, hr);
 };
 
-const renderUpdatedFeed = (newPosts) => {
-  newPosts.forEach((newPost) => {
-    const { postTitle, postLink } = newPost;
-    const newPostItemLink = document.createElement('a');
-    const newPostItem = document.createElement('li');
-    newPostItemLink.innerText = postTitle;
-    newPostItemLink.href = postLink;
-    newPostItem.classList.add('feedPost');
-    newPostItem.id = _.uniqueId('post_');
-    newPostItem.append(newPostItemLink);
-    feedPostsList.prepend(newPostItem);
+const renderfeedPostsList = (posts) => {
+  posts.forEach((post) => {
+    const { postTitle, postLink } = post;
+    const postItemLink = document.createElement('a');
+    const postItem = document.createElement('li');
+    postItemLink.innerText = postTitle;
+    postItemLink.href = postLink;
+    postItem.classList.add('feedPost');
+    postItem.id = _.uniqueId('post_');
+    postItem.append(postItemLink);
+    feedPostsList.prepend(postItem);
   });
 };
 
@@ -103,12 +90,13 @@ const render = (state) => {
   watch(feed, 'currentPosts', () => {
     const currentFeedTitle = feed.currentPosts.feedInfo.feedTitle;
     const currentFeedDescription = feed.currentPosts.feedInfo.feedDescription;
-    const currentFeedPosts = feed.currentPosts.feedPosts;
-    renderFeed(currentFeedTitle, currentFeedDescription, currentFeedPosts);
+    const currentFeedPosts = Object.values(feed.currentPosts.feedPosts).reverse();
+    renderfeedChannelsList(currentFeedTitle, currentFeedDescription);
+    renderfeedPostsList(currentFeedPosts);
   });
 
   watch(feed, 'newPosts', () => {
-    renderUpdatedFeed(feed.newPosts);
+    renderfeedPostsList(feed.newPosts);
   });
 
   watch(feed, 'allPostsCount', () => {

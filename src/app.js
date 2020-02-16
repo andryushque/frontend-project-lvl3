@@ -127,13 +127,13 @@ export default () => {
         const newFeedPosts = [];
         feedPosts.forEach((feedPost) => {
           if (!allFeedPostsLinks.includes(feedPost.postLink)) {
-            newFeedPosts.push(feedPost);
+            newFeedPosts.unshift(feedPost);
           }
           return newFeedPosts;
         });
         state.feed.allPosts = [...state.feed.allPosts, ...newFeedPosts];
         state.feed.allPostsCount = state.feed.allPosts.length;
-        state.feed.newPosts = [...newFeedPosts].reverse();
+        state.feed.newPosts = Array.from(new Set(newFeedPosts));
       });
     });
     setTimeout(updateFeed, 5000);
