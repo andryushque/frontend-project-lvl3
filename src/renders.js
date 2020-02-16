@@ -38,6 +38,7 @@ const renderfeedPostsList = (posts) => {
 
 const renderFeedPostsCount = (count) => {
   feedPostsCount.innerText = count;
+  feedPostsCount.classList.add('text-dark');
 };
 
 const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
