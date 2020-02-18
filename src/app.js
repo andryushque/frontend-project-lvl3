@@ -13,10 +13,10 @@ const state = {
     validationState: 'valid',
     url: '',
   },
-  currentPosts: [],
-  allPosts: [],
-  newPosts: [],
-  feeds: [],
+  feeds: {
+    channels: [],
+    posts: [],
+  },
   validateResultMessage: '',
   errorMessage: '',
 };
@@ -25,9 +25,12 @@ const inputField = document.getElementById('url');
 const inputForm = document.getElementById('inputForm');
 const proxy = 'cors-anywhere.herokuapp.com';
 
+const postsLinks = [];
+const urls = [];
+
 const checkoutFeedUrlSchema = yup.string().url().required();
 const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-const isUrlDuplicated = (url) => state.feeds.includes(url);
+const isUrlDuplicated = (url) => urls.includes(url);
 
 i18next.init({
   debug: true,
@@ -57,26 +60,18 @@ const validate = (url) => {
 };
 
 const updateFeed = () => {
-  const feedUrls = state.feeds;
-  state.newPosts = [];
-  feedUrls.forEach((url) => {
+  urls.forEach((url) => {
     const link = `https://${proxy}/${url}`;
     axios.get(link).then((response) => {
-      const { feedPosts } = parse(response.data);
-      return feedPosts;
-    }).then((feedPosts) => {
-      const allFeedPosts = state.allPosts;
-      const allFeedPostsLinks = [];
-      allFeedPosts.forEach((post) => allFeedPostsLinks.push(post.postLink));
-      const newFeedPosts = [];
-      feedPosts.forEach((feedPost) => {
-        if (!allFeedPostsLinks.includes(feedPost.postLink)) {
-          newFeedPosts.unshift(feedPost);
+      const { posts } = parse(response.data);
+      const filteredNewPosts = [];
+      posts.forEach((post) => {
+        if (!postsLinks.includes(post.postLink)) {
+          filteredNewPosts.unshift(post);
+          postsLinks.push(post.postLink);
         }
-        return newFeedPosts;
       });
-      state.allPosts = [...state.allPosts, ...newFeedPosts];
-      state.newPosts = Array.from(new Set(newFeedPosts));
+      state.feeds.posts = [...filteredNewPosts];
     });
   });
   setTimeout(updateFeed, 5000);
@@ -92,15 +87,17 @@ export default () => {
   inputForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const rssUrl = state.form.url;
-    state.feeds.push(rssUrl);
+    urls.push(rssUrl);
     const link = `https://${proxy}/${rssUrl}`;
 
     axios.get(link)
       .then((response) => {
         const feedData = parse(response.data);
-        const { feedPosts } = feedData;
-        state.currentPosts = feedData;
-        state.allPosts = [...state.allPosts, ...feedPosts];
+        const { title, description, posts } = feedData;
+        const channelInfo = { title, description };
+        posts.forEach((post) => postsLinks.push(post.postLink));
+        state.feeds.channels = [channelInfo];
+        state.feeds.posts = [...posts].reverse();
       })
       .catch((err) => {
         if (!err.response) {
