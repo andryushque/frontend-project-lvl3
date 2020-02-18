@@ -37,16 +37,16 @@ i18next.init({
   keySeparator: '.',
 });
 
-const validate = () => {
-  isUrlValid(state.form.url).then((valid) => {
+const validate = (url) => {
+  isUrlValid(url).then((valid) => {
     state.form.inputProcessState = 'filling';
-    if (valid && !isUrlDuplicated(state.form.url)) {
+    if (valid && !isUrlDuplicated(url)) {
       state.validateResultMessage = '';
       state.form.validationState = 'valid';
     } else if (state.form.url === '') {
       state.form.validationState = 'notValidated';
       state.validateResultMessage = '';
-    } else if (valid && isUrlDuplicated(state.form.url)) {
+    } else if (valid && isUrlDuplicated(url)) {
       state.validateResultMessage = i18next.t('validateResultMessages.addedUrl');
       state.form.validationState = 'invalid';
     } else {
@@ -82,12 +82,11 @@ const updateFeed = () => {
   setTimeout(updateFeed, 5000);
 };
 
-
 export default () => {
   inputField.addEventListener('input', (e) => {
     state.errorMessage = '';
     state.form.url = e.target.value;
-    validate(state);
+    validate(state.form.url);
   });
 
   inputForm.addEventListener('submit', (e) => {
