@@ -89,8 +89,8 @@ const render = (state) => {
   });
 
   watch(feed, 'currentPosts', () => {
-    const currentFeedTitle = feed.currentPosts.feedInfo.feedTitle;
-    const currentFeedDescription = feed.currentPosts.feedInfo.feedDescription;
+    const currentFeedTitle = feed.currentPosts.feedTitle;
+    const currentFeedDescription = feed.currentPosts.feedDescription;
     const currentFeedPosts = Object.values(feed.currentPosts.feedPosts).reverse();
     renderfeedChannelsList(currentFeedTitle, currentFeedDescription);
     renderfeedPostsList(currentFeedPosts);

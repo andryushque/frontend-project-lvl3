@@ -2,9 +2,9 @@ const domParser = new DOMParser();
 
 const parse = (data) => {
   const parsedData = domParser.parseFromString(data, 'text/xml');
+  console.log('parsedData', parsedData);
   const feedTitle = parsedData.querySelector('title').textContent;
   const feedDescription = parsedData.querySelector('description').textContent;
-  const feedInfo = { feedTitle, feedDescription };
 
   const feedPosts = [];
   const postItems = parsedData.querySelectorAll('item');
@@ -16,7 +16,8 @@ const parse = (data) => {
   });
 
   return {
-    feedInfo,
+    feedTitle,
+    feedDescription,
     feedPosts,
   };
 };
