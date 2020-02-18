@@ -11,7 +11,7 @@ const state = {
   form: {
     inputProcessState: 'filling', // => filling | done
     validationState: 'valid',
-    inputedUrl: '',
+    url: '',
   },
   feed: {
     currentPosts: [],
@@ -48,18 +48,18 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.errorMessage = '';
-    state.form.inputedUrl = e.target.value;
+    state.form.url = e.target.value;
 
-    isUrlValid(state.form.inputedUrl).then((valid) => {
+    isUrlValid(state.form.url).then((valid) => {
       i18next.init(options).then((t) => {
         state.form.inputProcessState = 'filling';
-        if (valid && !isUrlDuplicated(state.form.inputedUrl)) {
+        if (valid && !isUrlDuplicated(state.form.url)) {
           state.validateResultMessage = '';
           state.form.validationState = 'valid';
-        } else if (state.form.inputedUrl === '') {
+        } else if (state.form.url === '') {
           state.form.validationState = 'notValidated';
           state.validateResultMessage = '';
-        } else if (valid && isUrlDuplicated(state.form.inputedUrl)) {
+        } else if (valid && isUrlDuplicated(state.form.url)) {
           state.validateResultMessage = t('validateResultMessages.addedUrl');
           state.form.validationState = 'invalid';
         } else {
@@ -72,9 +72,9 @@ export default () => {
 
   inputForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const url = state.form.inputedUrl;
-    state.urlList.push(url);
-    const link = `https://${proxy}/${url}`;
+    const rssUrl = state.form.url;
+    state.urlList.push(rssUrl);
+    const link = `https://${proxy}/${rssUrl}`;
 
     i18next.init(options)
       .then((t) => {
