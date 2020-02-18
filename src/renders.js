@@ -4,25 +4,29 @@ import _ from 'lodash';
 const inputField = document.getElementById('url');
 const button = document.querySelector('.btn');
 const message = document.getElementById('message');
-const feedChannelsList = document.querySelector('.feedChannelsList');
-const feedPostsList = document.querySelector('.feedPostsList');
-const feedPostsCount = document.querySelector('.count');
+const channelsList = document.querySelector('.channelsList');
+const postsList = document.querySelector('.postsList');
+const postsCount = document.getElementById('postsCount');
 
-const renderfeedChannelsList = (title, description) => {
-  const feedTitle = document.createElement('h5');
-  feedTitle.innerText = title;
-  const feedDescription = document.createElement('div');
-  feedDescription.classList.add('text-secondary');
-  feedDescription.innerText = description;
+const renderChannelsList = (channels) => {
+  channels.forEach((channel) => {
+    const { title, description } = channel;
+    const channelTitle = document.createElement('h5');
+    channelTitle.innerText = title;
+    const channelDescription = document.createElement('div');
+    channelDescription.classList.add('text-secondary');
+    channelDescription.innerText = description;
 
-  const feedList = document.createElement('div');
-  const hr = document.createElement('hr');
-  feedList.classList.add('mb-4');
-  feedList.append(feedTitle, feedDescription);
-  feedChannelsList.prepend(feedList, hr);
+    const channelItem = document.createElement('div');
+    const underline = document.createElement('hr');
+    channelItem.classList.add('mb-4');
+    channelItem.id = _.uniqueId('channel_');
+    channelItem.append(channelTitle, channelDescription);
+    channelsList.prepend(channelItem, underline);
+  });
 };
 
-const renderfeedPostsList = (posts) => {
+const renderPostsList = (posts) => {
   posts.forEach((post) => {
     const { postTitle, postLink } = post;
     const postItemLink = document.createElement('a');
@@ -32,13 +36,14 @@ const renderfeedPostsList = (posts) => {
     postItem.classList.add('feedPost');
     postItem.id = _.uniqueId('post_');
     postItem.append(postItemLink);
-    feedPostsList.prepend(postItem);
+    postsList.prepend(postItem);
   });
 };
 
-const renderFeedPostsCount = (count) => {
-  feedPostsCount.innerText = count;
-  feedPostsCount.classList.add('text-dark');
+const renderPostsCount = (count) => {
+  const current = Number(postsCount.innerText);
+  postsCount.innerText = current + count;
+  postsCount.classList.add('text-dark');
 };
 
 const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
@@ -52,7 +57,7 @@ const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
 };
 
 const render = (state) => {
-  const { form } = state;
+  const { form, feeds } = state;
 
   watch(state, 'form', () => {
     if (form.inputProcessState === 'done') {
@@ -88,18 +93,13 @@ const render = (state) => {
     renderErrorMessage(state.errorMessage, 'alert-danger');
   });
 
-  watch(state, 'currentPosts', () => {
-    const currentFeedTitle = state.currentPosts.feedTitle;
-    const currentFeedDescription = state.currentPosts.feedDescription;
-    const currentFeedPosts = Object.values(state.currentPosts.feedPosts).reverse();
-    renderfeedChannelsList(currentFeedTitle, currentFeedDescription);
-    renderfeedPostsList(currentFeedPosts);
-    renderFeedPostsCount(state.allPosts.length);
+  watch(feeds, 'channels', () => {
+    renderChannelsList(feeds.channels);
   });
 
-  watch(state, 'newPosts', () => {
-    renderfeedPostsList(state.newPosts);
-    renderFeedPostsCount(state.allPosts.length);
+  watch(feeds, 'posts', () => {
+    renderPostsList(feeds.posts);
+    renderPostsCount(feeds.posts.length);
   });
 };
 
