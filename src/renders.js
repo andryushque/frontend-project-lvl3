@@ -57,7 +57,7 @@ const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
 };
 
 const render = (state) => {
-  const { form, feeds } = state;
+  const { form } = state;
 
   watch(state, 'form', () => {
     if (form.inputProcessState === 'done') {
@@ -93,13 +93,13 @@ const render = (state) => {
     renderErrorMessage(state.errorMessage, 'alert-danger');
   });
 
-  watch(feeds, 'channels', () => {
-    renderChannelsList(feeds.channels);
+  watch(state, 'channels', () => {
+    renderChannelsList(state.channels);
   });
 
-  watch(feeds, 'posts', () => {
-    renderPostsList(feeds.posts);
-    renderPostsCount(feeds.posts.length);
+  watch(state, 'posts', () => {
+    renderPostsList(state.posts);
+    renderPostsCount(state.posts.length);
   });
 };
 

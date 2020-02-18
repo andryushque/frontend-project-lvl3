@@ -13,10 +13,8 @@ const state = {
     validationState: 'valid',
     url: '',
   },
-  feeds: {
-    channels: [],
-    posts: [],
-  },
+  channels: [],
+  posts: [],
   validateResultMessage: '',
   errorMessage: '',
 };
@@ -71,7 +69,7 @@ const updateFeed = () => {
           postsLinks.push(post.postLink);
         }
       });
-      state.feeds.posts = [...filteredNewPosts];
+      state.posts = [...filteredNewPosts];
     });
   });
   setTimeout(updateFeed, 5000);
@@ -96,8 +94,8 @@ export default () => {
         const { title, description, posts } = feedData;
         const channelInfo = { title, description };
         posts.forEach((post) => postsLinks.push(post.postLink));
-        state.feeds.channels = [channelInfo];
-        state.feeds.posts = [...posts].reverse();
+        state.channels = [channelInfo];
+        state.posts = [...posts].reverse();
       })
       .catch((err) => {
         if (!err.response) {
