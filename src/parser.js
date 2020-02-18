@@ -2,7 +2,6 @@ const domParser = new DOMParser();
 
 const parse = (data) => {
   const parsedData = domParser.parseFromString(data, 'text/xml');
-  console.log('parsedData', parsedData);
   const feedTitle = parsedData.querySelector('title').textContent;
   const feedDescription = parsedData.querySelector('description').textContent;
 
