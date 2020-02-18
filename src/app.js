@@ -21,6 +21,14 @@ const state = {
   errorMessage: '',
 };
 
+const inputField = document.getElementById('url');
+const inputForm = document.getElementById('inputForm');
+const proxy = 'cors-anywhere.herokuapp.com';
+
+const checkoutFeedUrlSchema = yup.string().url().required();
+const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
+const isUrlDuplicated = (url) => state.feeds.includes(url);
+
 i18next.init({
   debug: true,
   lng: 'en',
@@ -29,36 +37,57 @@ i18next.init({
   keySeparator: '.',
 });
 
+const validate = () => {
+  isUrlValid(state.form.url).then((valid) => {
+    state.form.inputProcessState = 'filling';
+    if (valid && !isUrlDuplicated(state.form.url)) {
+      state.validateResultMessage = '';
+      state.form.validationState = 'valid';
+    } else if (state.form.url === '') {
+      state.form.validationState = 'notValidated';
+      state.validateResultMessage = '';
+    } else if (valid && isUrlDuplicated(state.form.url)) {
+      state.validateResultMessage = i18next.t('validateResultMessages.addedUrl');
+      state.form.validationState = 'invalid';
+    } else {
+      state.validateResultMessage = i18next.t('validateResultMessages.invalidUrl');
+      state.form.validationState = 'invalid';
+    }
+  });
+};
+
+const updateFeed = () => {
+  const feedUrls = state.feeds;
+  state.newPosts = [];
+  feedUrls.forEach((url) => {
+    const link = `https://${proxy}/${url}`;
+    axios.get(link).then((response) => {
+      const { feedPosts } = parse(response.data);
+      return feedPosts;
+    }).then((feedPosts) => {
+      const allFeedPosts = state.allPosts;
+      const allFeedPostsLinks = [];
+      allFeedPosts.forEach((post) => allFeedPostsLinks.push(post.postLink));
+      const newFeedPosts = [];
+      feedPosts.forEach((feedPost) => {
+        if (!allFeedPostsLinks.includes(feedPost.postLink)) {
+          newFeedPosts.unshift(feedPost);
+        }
+        return newFeedPosts;
+      });
+      state.allPosts = [...state.allPosts, ...newFeedPosts];
+      state.newPosts = Array.from(new Set(newFeedPosts));
+    });
+  });
+  setTimeout(updateFeed, 5000);
+};
+
+
 export default () => {
-  const inputField = document.getElementById('url');
-  const inputForm = document.getElementById('inputForm');
-
-  const checkoutFeedUrlSchema = yup.string().url().required();
-  const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-  const isUrlDuplicated = (url) => state.feeds.includes(url);
-
-  const proxy = 'cors-anywhere.herokuapp.com';
-
   inputField.addEventListener('input', (e) => {
     state.errorMessage = '';
     state.form.url = e.target.value;
-
-    isUrlValid(state.form.url).then((valid) => {
-      state.form.inputProcessState = 'filling';
-      if (valid && !isUrlDuplicated(state.form.url)) {
-        state.validateResultMessage = '';
-        state.form.validationState = 'valid';
-      } else if (state.form.url === '') {
-        state.form.validationState = 'notValidated';
-        state.validateResultMessage = '';
-      } else if (valid && isUrlDuplicated(state.form.url)) {
-        state.validateResultMessage = i18next.t('validateResultMessages.addedUrl');
-        state.form.validationState = 'invalid';
-      } else {
-        state.validateResultMessage = i18next.t('validateResultMessages.invalidUrl');
-        state.form.validationState = 'invalid';
-      }
-    });
+    validate(state);
   });
 
   inputForm.addEventListener('submit', (e) => {
@@ -99,32 +128,7 @@ export default () => {
     state.form.inputProcessState = 'done';
   });
 
-  const updateFeed = () => {
-    const feedUrls = state.feeds;
-    state.newPosts = [];
-    feedUrls.forEach((url) => {
-      const link = `https://${proxy}/${url}`;
-      axios.get(link).then((response) => {
-        const { feedPosts } = parse(response.data);
-        return feedPosts;
-      }).then((feedPosts) => {
-        const allFeedPosts = state.allPosts;
-        const allFeedPostsLinks = [];
-        allFeedPosts.forEach((post) => allFeedPostsLinks.push(post.postLink));
-        const newFeedPosts = [];
-        feedPosts.forEach((feedPost) => {
-          if (!allFeedPostsLinks.includes(feedPost.postLink)) {
-            newFeedPosts.unshift(feedPost);
-          }
-          return newFeedPosts;
-        });
-        state.allPosts = [...state.allPosts, ...newFeedPosts];
-        state.newPosts = Array.from(new Set(newFeedPosts));
-      });
-    });
-    setTimeout(updateFeed, 5000);
-  };
-
   updateFeed();
+
   render(state);
 };
