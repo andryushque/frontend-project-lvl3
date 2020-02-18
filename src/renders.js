@@ -52,7 +52,7 @@ const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
 };
 
 const render = (state) => {
-  const { form, feed } = state;
+  const { form } = state;
 
   watch(state, 'form', () => {
     if (form.inputProcessState === 'done') {
@@ -88,20 +88,20 @@ const render = (state) => {
     renderErrorMessage(state.errorMessage, 'alert-danger');
   });
 
-  watch(feed, 'currentPosts', () => {
-    const currentFeedTitle = feed.currentPosts.feedTitle;
-    const currentFeedDescription = feed.currentPosts.feedDescription;
-    const currentFeedPosts = Object.values(feed.currentPosts.feedPosts).reverse();
+  watch(state, 'currentPosts', () => {
+    const currentFeedTitle = state.currentPosts.feedTitle;
+    const currentFeedDescription = state.currentPosts.feedDescription;
+    const currentFeedPosts = Object.values(state.currentPosts.feedPosts).reverse();
     renderfeedChannelsList(currentFeedTitle, currentFeedDescription);
     renderfeedPostsList(currentFeedPosts);
   });
 
-  watch(feed, 'newPosts', () => {
-    renderfeedPostsList(feed.newPosts);
+  watch(state, 'newPosts', () => {
+    renderfeedPostsList(state.newPosts);
   });
 
-  watch(feed, 'allPostsCount', () => {
-    renderFeedPostsCount(feed.allPostsCount);
+  watch(state, 'allPostsCount', () => {
+    renderFeedPostsCount(state.allPostsCount);
   });
 };
 

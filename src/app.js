@@ -13,12 +13,10 @@ const state = {
     validationState: 'valid',
     url: '',
   },
-  feed: {
-    currentPosts: [],
-    allPosts: [],
-    allPostsCount: 0,
-    newPosts: [],
-  },
+  currentPosts: [],
+  allPosts: [],
+  allPostsCount: 0,
+  newPosts: [],
   urlList: [],
   validateResultMessage: '',
   errorMessage: '',
@@ -82,9 +80,9 @@ export default () => {
           .then((response) => {
             const feedData = parse(response.data);
             const { feedPosts } = feedData;
-            state.feed.currentPosts = feedData;
-            state.feed.allPosts = [...state.feed.allPosts, ...feedPosts];
-            state.feed.allPostsCount = state.feed.allPosts.length;
+            state.currentPosts = feedData;
+            state.allPosts = [...state.allPosts, ...feedPosts];
+            state.allPostsCount = state.allPosts.length;
           })
           .catch((err) => {
             if (err.message === 'Network Error') {
@@ -114,14 +112,14 @@ export default () => {
 
   const updateFeed = () => {
     const feedUrlList = state.urlList;
-    state.feed.newPosts = [];
+    state.newPosts = [];
     feedUrlList.forEach((url) => {
       const link = `https://${proxy}/${url}`;
       axios.get(link).then((response) => {
         const { feedPosts } = parse(response.data);
         return feedPosts;
       }).then((feedPosts) => {
-        const allFeedPosts = state.feed.allPosts;
+        const allFeedPosts = state.allPosts;
         const allFeedPostsLinks = [];
         allFeedPosts.forEach((post) => allFeedPostsLinks.push(post.postLink));
         const newFeedPosts = [];
@@ -131,9 +129,9 @@ export default () => {
           }
           return newFeedPosts;
         });
-        state.feed.allPosts = [...state.feed.allPosts, ...newFeedPosts];
-        state.feed.allPostsCount = state.feed.allPosts.length;
-        state.feed.newPosts = Array.from(new Set(newFeedPosts));
+        state.allPosts = [...state.allPosts, ...newFeedPosts];
+        state.allPostsCount = state.allPosts.length;
+        state.newPosts = Array.from(new Set(newFeedPosts));
       });
     });
     setTimeout(updateFeed, 5000);
