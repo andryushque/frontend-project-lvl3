@@ -17,7 +17,7 @@ const state = {
   allPosts: [],
   allPostsCount: 0,
   newPosts: [],
-  urlList: [],
+  feeds: [],
   validateResultMessage: '',
   errorMessage: '',
 };
@@ -28,7 +28,7 @@ export default () => {
 
   const checkoutFeedUrlSchema = yup.string().url().required();
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-  const isUrlDuplicated = (url) => state.urlList.includes(url);
+  const isUrlDuplicated = (url) => state.feeds.includes(url);
 
   const proxy = 'cors-anywhere.herokuapp.com';
 
@@ -71,7 +71,7 @@ export default () => {
   inputForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const rssUrl = state.form.url;
-    state.urlList.push(rssUrl);
+    state.feeds.push(rssUrl);
     const link = `https://${proxy}/${rssUrl}`;
 
     i18next.init(options)
@@ -111,9 +111,9 @@ export default () => {
   });
 
   const updateFeed = () => {
-    const feedUrlList = state.urlList;
+    const feedUrls = state.feeds;
     state.newPosts = [];
-    feedUrlList.forEach((url) => {
+    feedUrls.forEach((url) => {
       const link = `https://${proxy}/${url}`;
       axios.get(link).then((response) => {
         const { feedPosts } = parse(response.data);
