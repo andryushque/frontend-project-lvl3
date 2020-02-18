@@ -103,7 +103,7 @@ export default () => {
         state.allPosts = [...state.allPosts, ...feedPosts];
       })
       .catch((err) => {
-        if (err.message === 'Network Error') {
+        if (!err.response) {
           state.errorMessage = i18next.t('errorMessages.networkError');
         } else if (err.response) {
           const errorStatus = err.response.status;
