@@ -21,6 +21,14 @@ const state = {
   errorMessage: '',
 };
 
+i18next.init({
+  debug: true,
+  lng: 'en',
+  resources,
+  fallbackLng: 'en',
+  keySeparator: '.',
+});
+
 export default () => {
   const inputField = document.getElementById('url');
   const inputForm = document.getElementById('inputForm');
@@ -30,14 +38,6 @@ export default () => {
   const isUrlDuplicated = (url) => state.feeds.includes(url);
 
   const proxy = 'cors-anywhere.herokuapp.com';
-
-  i18next.init({
-    debug: true,
-    lng: 'en',
-    resources,
-    fallbackLng: 'en',
-    keySeparator: '.',
-  });
 
   inputField.addEventListener('input', (e) => {
     state.errorMessage = '';
