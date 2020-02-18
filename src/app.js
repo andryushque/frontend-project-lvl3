@@ -31,35 +31,33 @@ export default () => {
 
   const proxy = 'cors-anywhere.herokuapp.com';
 
-  const options = {
+  i18next.init({
     debug: true,
     lng: 'en',
     resources,
     fallbackLng: 'en',
     keySeparator: '.',
-  };
+  });
 
   inputField.addEventListener('input', (e) => {
     state.errorMessage = '';
     state.form.url = e.target.value;
 
     isUrlValid(state.form.url).then((valid) => {
-      i18next.init(options).then((t) => {
-        state.form.inputProcessState = 'filling';
-        if (valid && !isUrlDuplicated(state.form.url)) {
-          state.validateResultMessage = '';
-          state.form.validationState = 'valid';
-        } else if (state.form.url === '') {
-          state.form.validationState = 'notValidated';
-          state.validateResultMessage = '';
-        } else if (valid && isUrlDuplicated(state.form.url)) {
-          state.validateResultMessage = t('validateResultMessages.addedUrl');
-          state.form.validationState = 'invalid';
-        } else {
-          state.validateResultMessage = t('validateResultMessages.invalidUrl');
-          state.form.validationState = 'invalid';
-        }
-      });
+      state.form.inputProcessState = 'filling';
+      if (valid && !isUrlDuplicated(state.form.url)) {
+        state.validateResultMessage = '';
+        state.form.validationState = 'valid';
+      } else if (state.form.url === '') {
+        state.form.validationState = 'notValidated';
+        state.validateResultMessage = '';
+      } else if (valid && isUrlDuplicated(state.form.url)) {
+        state.validateResultMessage = i18next.t('validateResultMessages.addedUrl');
+        state.form.validationState = 'invalid';
+      } else {
+        state.validateResultMessage = i18next.t('validateResultMessages.invalidUrl');
+        state.form.validationState = 'invalid';
+      }
     });
   });
 
@@ -69,37 +67,34 @@ export default () => {
     state.feeds.push(rssUrl);
     const link = `https://${proxy}/${rssUrl}`;
 
-    i18next.init(options)
-      .then((t) => {
-        axios.get(link)
-          .then((response) => {
-            const feedData = parse(response.data);
-            const { feedPosts } = feedData;
-            state.currentPosts = feedData;
-            state.allPosts = [...state.allPosts, ...feedPosts];
-          })
-          .catch((err) => {
-            if (err.message === 'Network Error') {
-              state.errorMessage = t('errorMessages.networkError');
-            } else if (err.response) {
-              const errorStatus = err.response.status;
-              switch (errorStatus) {
-                case 404:
-                  state.errorMessage = t('errorMessages.error404');
-                  break;
-                case 406:
-                  state.errorMessage = t('errorMessages.error406');
-                  break;
-                case 500:
-                  state.errorMessage = t('errorMessages.error500');
-                  break;
-                default:
-                  state.errorMessage = t('errorMessages.unknownError');
-              }
-            } else {
-              state.errorMessage = t('errorMessages.unknownError');
-            }
-          });
+    axios.get(link)
+      .then((response) => {
+        const feedData = parse(response.data);
+        const { feedPosts } = feedData;
+        state.currentPosts = feedData;
+        state.allPosts = [...state.allPosts, ...feedPosts];
+      })
+      .catch((err) => {
+        if (err.message === 'Network Error') {
+          state.errorMessage = i18next.t('errorMessages.networkError');
+        } else if (err.response) {
+          const errorStatus = err.response.status;
+          switch (errorStatus) {
+            case 404:
+              state.errorMessage = i18next.t('errorMessages.error404');
+              break;
+            case 406:
+              state.errorMessage = i18next.t('errorMessages.error406');
+              break;
+            case 500:
+              state.errorMessage = i18next.t('errorMessages.error500');
+              break;
+            default:
+              state.errorMessage = i18next.t('errorMessages.unknownError');
+          }
+        } else {
+          state.errorMessage = i18next.t('errorMessages.unknownError');
+        }
       });
     state.form.inputProcessState = 'done';
   });
