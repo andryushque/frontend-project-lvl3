@@ -15,7 +15,6 @@ const state = {
   },
   currentPosts: [],
   allPosts: [],
-  allPostsCount: 0,
   newPosts: [],
   feeds: [],
   validateResultMessage: '',
@@ -82,7 +81,6 @@ export default () => {
             const { feedPosts } = feedData;
             state.currentPosts = feedData;
             state.allPosts = [...state.allPosts, ...feedPosts];
-            state.allPostsCount = state.allPosts.length;
           })
           .catch((err) => {
             if (err.message === 'Network Error') {
@@ -130,7 +128,6 @@ export default () => {
           return newFeedPosts;
         });
         state.allPosts = [...state.allPosts, ...newFeedPosts];
-        state.allPostsCount = state.allPosts.length;
         state.newPosts = Array.from(new Set(newFeedPosts));
       });
     });

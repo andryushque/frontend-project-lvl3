@@ -94,14 +94,12 @@ const render = (state) => {
     const currentFeedPosts = Object.values(state.currentPosts.feedPosts).reverse();
     renderfeedChannelsList(currentFeedTitle, currentFeedDescription);
     renderfeedPostsList(currentFeedPosts);
+    renderFeedPostsCount(state.allPosts.length);
   });
 
   watch(state, 'newPosts', () => {
     renderfeedPostsList(state.newPosts);
-  });
-
-  watch(state, 'allPostsCount', () => {
-    renderFeedPostsCount(state.allPostsCount);
+    renderFeedPostsCount(state.allPosts.length);
   });
 };
 
