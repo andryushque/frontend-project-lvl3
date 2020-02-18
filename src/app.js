@@ -5,7 +5,7 @@ import axios from 'axios';
 import i18next from 'i18next';
 import render from './renders';
 import parse from './parser';
-import translationEN from './locales/en/translation.json';
+import resources from './locales';
 
 const state = {
   form: {
@@ -30,10 +30,6 @@ export default () => {
   const isUrlDuplicated = (url) => state.feeds.includes(url);
 
   const proxy = 'cors-anywhere.herokuapp.com';
-
-  const resources = {
-    en: { translation: translationEN },
-  };
 
   const options = {
     debug: true,
