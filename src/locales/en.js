@@ -9,7 +9,7 @@ export default {
     },
     input: {
       invalidUrl: 'This URL is invalid.',
-      addedUrl: 'This URL is already added.',
+      addedUrl: 'This URL has already been added.',
     },
   },
 };
