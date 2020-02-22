@@ -60,27 +60,26 @@ export default (state) => {
     const errorMessageContainer = document.createElement('div');
     errorMessageContainer.classList.add('errorMessage', 'container', 'd-block', 'mt-2');
     const { err, errType } = errors;
+    const interval = 4000;
 
     if (errType === 'httpClient') {
       switch (err) {
-        case 404:
-        case 406:
-        case 500:
-          errorMessageContainer.innerText = i18next.t(`httpClient.error${err}`);
+        case 404: case 406: case 500:
+          errorMessageContainer.innerText = i18next.t(`${errType}.error${err}`);
           break;
         case 'Network Error':
-          errorMessageContainer.innerText = i18next.t('httpClient.networkError');
+          errorMessageContainer.innerText = i18next.t(`${errType}.networkError`);
           break;
         default:
-          errorMessageContainer.innerText = i18next.t('httpClient.unknownError');
+          errorMessageContainer.innerText = i18next.t(`${errType}.unknownError`);
       }
       errorMessageContainer.classList.add('alert-danger');
       errorMessage.append(errorMessageContainer);
-      setTimeout(removeErrorMessage, 5000);
+      setTimeout(removeErrorMessage, interval);
     }
 
     if (errType === 'input') {
-      errorMessageContainer.innerText = i18next.t(`input.${err}`);
+      errorMessageContainer.innerText = i18next.t(`${errType}.${err}`);
       errorMessageContainer.classList.add('invalid-feedback');
       errorMessage.append(errorMessageContainer);
     }
