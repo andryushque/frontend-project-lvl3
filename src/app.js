@@ -15,8 +15,7 @@ const state = {
   },
   channels: [],
   posts: [],
-  validateResultMessage: '',
-  errorMessage: '',
+  errors: {},
 };
 
 const inputField = document.getElementById('url');
@@ -42,17 +41,17 @@ const validate = (url) => {
   isUrlValid(url).then((valid) => {
     state.form.inputProcessState = 'filling';
     if (valid && !isUrlDuplicated(url)) {
-      state.validateResultMessage = '';
       state.form.validationState = 'valid';
+      state.errors = {};
     } else if (state.form.url === '') {
       state.form.validationState = 'notValidated';
-      state.validateResultMessage = '';
+      state.errors = {};
     } else if (valid && isUrlDuplicated(url)) {
-      state.validateResultMessage = i18next.t('validateResultMessages.addedUrl');
       state.form.validationState = 'invalid';
+      state.errors = { err: 'addedUrl', type: 'input' };
     } else {
-      state.validateResultMessage = i18next.t('validateResultMessages.invalidUrl');
       state.form.validationState = 'invalid';
+      state.errors = { err: 'invalidUrl', type: 'input' };
     }
   });
 };
@@ -77,7 +76,6 @@ const updateFeed = () => {
 
 export default () => {
   inputField.addEventListener('input', (e) => {
-    state.errorMessage = '';
     state.form.url = e.target.value;
     validate(state.form.url);
   });
@@ -85,11 +83,10 @@ export default () => {
   inputForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const rssUrl = state.form.url;
-    urls.push(rssUrl);
     const link = `https://${proxy}/${rssUrl}`;
-
     axios.get(link)
       .then((response) => {
+        urls.push(rssUrl);
         const feedData = parse(response.data);
         const { title, description, posts } = feedData;
         const channelInfo = { title, description };
@@ -97,26 +94,11 @@ export default () => {
         state.channels = [channelInfo];
         state.posts = [...posts].reverse();
       })
-      .catch((err) => {
-        if (!err.response) {
-          state.errorMessage = i18next.t('errorMessages.networkError');
-        } else if (err.response) {
-          const errorStatus = err.response.status;
-          switch (errorStatus) {
-            case 404:
-              state.errorMessage = i18next.t('errorMessages.error404');
-              break;
-            case 406:
-              state.errorMessage = i18next.t('errorMessages.error406');
-              break;
-            case 500:
-              state.errorMessage = i18next.t('errorMessages.error500');
-              break;
-            default:
-              state.errorMessage = i18next.t('errorMessages.unknownError');
-          }
+      .catch((error) => {
+        if (error.response) {
+          state.errors = { err: error.response.status, type: 'httpClient' };
         } else {
-          state.errorMessage = i18next.t('errorMessages.unknownError');
+          state.errors = { err: error.message, type: 'httpClient' };
         }
       });
     state.form.inputProcessState = 'done';
