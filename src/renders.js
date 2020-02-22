@@ -6,7 +6,7 @@ export default (state) => {
   const { form } = state;
   const inputField = document.getElementById('url');
   const button = document.querySelector('.btn');
-  const message = document.getElementById('message');
+  const errorMessage = document.getElementById('errorMessage');
   const channelsList = document.querySelector('.channelsList');
   const postsList = document.querySelector('.postsList');
   const postsCount = document.getElementById('postsCount');
@@ -59,9 +59,9 @@ export default (state) => {
     removeErrorMessage();
     const errorMessageContainer = document.createElement('div');
     errorMessageContainer.classList.add('errorMessage', 'container', 'd-block', 'mt-2');
-    const { err, type } = errors;
+    const { err, errType } = errors;
 
-    if (type === 'httpClient') {
+    if (errType === 'httpClient') {
       switch (err) {
         case 404:
         case 406:
@@ -75,14 +75,14 @@ export default (state) => {
           errorMessageContainer.innerText = i18next.t('httpClient.unknownError');
       }
       errorMessageContainer.classList.add('alert-danger');
-      message.append(errorMessageContainer);
+      errorMessage.append(errorMessageContainer);
       setTimeout(removeErrorMessage, 5000);
     }
 
-    if (type === 'input') {
+    if (errType === 'input') {
       errorMessageContainer.innerText = i18next.t(`input.${err}`);
       errorMessageContainer.classList.add('invalid-feedback');
-      message.append(errorMessageContainer);
+      errorMessage.append(errorMessageContainer);
     }
   };
 

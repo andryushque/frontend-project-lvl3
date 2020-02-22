@@ -48,10 +48,10 @@ const validate = (url) => {
       state.errors = {};
     } else if (valid && isUrlDuplicated(url)) {
       state.form.validationState = 'invalid';
-      state.errors = { err: 'addedUrl', type: 'input' };
+      state.errors = { err: 'addedUrl', errType: 'input' };
     } else {
       state.form.validationState = 'invalid';
-      state.errors = { err: 'invalidUrl', type: 'input' };
+      state.errors = { err: 'invalidUrl', errType: 'input' };
     }
   });
 };
@@ -96,9 +96,9 @@ export default () => {
       })
       .catch((error) => {
         if (error.response) {
-          state.errors = { err: error.response.status, type: 'httpClient' };
+          state.errors = { err: error.response.status, errType: 'httpClient' };
         } else {
-          state.errors = { err: error.message, type: 'httpClient' };
+          state.errors = { err: error.message, errType: 'httpClient' };
         }
       });
     state.form.inputProcessState = 'done';
