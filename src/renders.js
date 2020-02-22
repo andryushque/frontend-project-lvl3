@@ -78,8 +78,11 @@ export default (state) => {
           inputField.classList.remove('is-valid');
           inputField.classList.add('is-invalid');
           break;
-        default:
+        case 'notValidated':
           inputField.classList.remove('is-valid', 'is-invalid');
+          break;
+        default:
+          throw new Error(`Unknown validation state: ${form.validationState}`);
       }
     }
   });
