@@ -1,4 +1,5 @@
 import { watch } from 'melanke-watchjs';
+import i18next from 'i18next';
 import _ from 'lodash';
 
 export default (state) => {
@@ -48,21 +49,45 @@ export default (state) => {
     postsCount.classList.add('text-dark');
   };
 
-  const renderErrorMessage = (errorMessage, feedbackTypeClass) => {
+  const removeErrorMessage = () => {
     if (document.querySelector('.errorMessage')) {
       document.querySelector('.errorMessage').remove();
     }
+  };
+
+  const renderErrorMessage = (errors) => {
+    removeErrorMessage();
     const errorMessageContainer = document.createElement('div');
-    errorMessageContainer.classList.add('errorMessage', 'container', 'd-block', 'mt-2', feedbackTypeClass);
-    errorMessageContainer.innerText = errorMessage;
-    message.append(errorMessageContainer);
+    errorMessageContainer.classList.add('errorMessage', 'container', 'd-block', 'mt-2');
+    const { err, type } = errors;
+
+    if (type === 'httpClient') {
+      switch (err) {
+        case 404:
+        case 406:
+        case 500:
+          errorMessageContainer.innerText = i18next.t(`httpClient.error${err}`);
+          break;
+        case 'Network Error':
+          errorMessageContainer.innerText = i18next.t('httpClient.networkError');
+          break;
+        default:
+          errorMessageContainer.innerText = i18next.t('httpClient.unknownError');
+      }
+      errorMessageContainer.classList.add('alert-danger');
+      message.append(errorMessageContainer);
+      setTimeout(removeErrorMessage, 5000);
+    }
+
+    if (type === 'input') {
+      errorMessageContainer.innerText = i18next.t(`input.${err}`);
+      errorMessageContainer.classList.add('invalid-feedback');
+      message.append(errorMessageContainer);
+    }
   };
 
   watch(state, 'form', () => {
     if (form.inputProcessState === 'done') {
-      if (document.querySelector('.errorMessage')) {
-        document.querySelector('.errorMessage').remove();
-      }
       inputField.classList.remove('is-valid', 'is-invalid');
       inputField.value = '';
       button.disabled = true;
@@ -87,12 +112,8 @@ export default (state) => {
     }
   });
 
-  watch(state, 'validateResultMessage', () => {
-    renderErrorMessage(state.validateResultMessage, 'invalid-feedback');
-  });
-
-  watch(state, 'errorMessage', () => {
-    renderErrorMessage(state.errorMessage, 'alert-danger');
+  watch(state, 'errors', () => {
+    renderErrorMessage(state.errors);
   });
 
   watch(state, 'channels', () => {
