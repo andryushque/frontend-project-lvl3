@@ -7,42 +7,6 @@ import render from './renders';
 import parse from './parser';
 import resources from './locales';
 
-const postsLinks = [];
-
-i18next.init({
-  debug: true,
-  lng: 'en',
-  resources,
-  fallbackLng: 'en',
-  keySeparator: '.',
-});
-
-const validate = (state) => {
-  const { form, feed } = state;
-
-  const checkoutFeedUrlSchema = yup.string().url().required();
-  const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-  const isUrlDuplicated = (url) => feed.urls.includes(url);
-
-  const rssUrl = form.url;
-  isUrlValid(rssUrl).then((valid) => {
-    form.inputProcessState = 'filling';
-    if (valid && !isUrlDuplicated(rssUrl)) {
-      form.validationState = 'valid';
-      feed.errors = {};
-    } else if (state.form.url === '') {
-      form.validationState = 'notValidated';
-      feed.errors = {};
-    } else if (valid && isUrlDuplicated(rssUrl)) {
-      form.validationState = 'invalid';
-      feed.errors = { err: 'addedUrl', errType: 'input' };
-    } else {
-      form.validationState = 'invalid';
-      feed.errors = { err: 'invalidUrl', errType: 'input' };
-    }
-  });
-};
-
 export default () => {
   const state = {
     form: {
@@ -53,7 +17,6 @@ export default () => {
     feed: {
       channels: [],
       posts: [],
-      urls: [],
       errors: {},
     },
   };
@@ -61,9 +24,35 @@ export default () => {
   const inputField = document.getElementById('url');
   const inputForm = document.getElementById('inputForm');
   const proxy = 'cors-anywhere.herokuapp.com';
+  const postsLinks = [];
+  const urls = [];
+
+  const validate = () => {
+    const checkoutFeedUrlSchema = yup.string().url().required();
+    const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
+    const isUrlDuplicated = (url) => urls.includes(url);
+
+    const rssUrl = state.form.url;
+    isUrlValid(rssUrl).then((valid) => {
+      state.form.inputProcessState = 'filling';
+      if (valid && !isUrlDuplicated(rssUrl)) {
+        state.form.validationState = 'valid';
+        state.feed.errors = {};
+      } else if (state.form.url === '') {
+        state.form.validationState = 'notValidated';
+        state.feed.errors = {};
+      } else if (valid && isUrlDuplicated(rssUrl)) {
+        state.form.validationState = 'invalid';
+        state.feed.errors = { err: 'addedUrl', errType: 'input' };
+      } else {
+        state.form.validationState = 'invalid';
+        state.feed.errors = { err: 'invalidUrl', errType: 'input' };
+      }
+    });
+  };
 
   const updateFeed = () => {
-    state.feed.urls.forEach((url) => {
+    urls.forEach((url) => {
       const link = `https://${proxy}/${url}`;
       axios.get(link).then((response) => {
         const { posts } = parse(response.data);
@@ -91,7 +80,7 @@ export default () => {
     const link = `https://${proxy}/${rssUrl}`;
     axios.get(link)
       .then((response) => {
-        state.feed.urls.push(rssUrl);
+        urls.push(rssUrl);
         const feedData = parse(response.data);
         const { title, description, posts } = feedData;
         const channelInfo = { title, description };
@@ -108,6 +97,14 @@ export default () => {
       });
     state.form.inputProcessState = 'done';
     updateFeed(state);
+  });
+
+  i18next.init({
+    debug: true,
+    lng: 'en',
+    resources,
+    fallbackLng: 'en',
+    keySeparator: '.',
   });
 
   updateFeed();
