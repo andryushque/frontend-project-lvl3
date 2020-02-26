@@ -93,7 +93,6 @@ export default () => {
         }
       });
     state.form.inputProcessState = 'done';
-    // updateFeed();
   });
 
   i18next.init({
