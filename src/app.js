@@ -25,21 +25,20 @@ export default () => {
   const postsLinks = [];
   const urls = [];
 
-  const validate = () => {
-    const checkoutFeedUrlSchema = yup.string().url().required();
-    const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-    const isUrlDuplicated = (url) => urls.includes(url);
+  const checkoutFeedUrlSchema = yup.string().url().required();
+  const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
+  const isUrlDuplicated = (url) => urls.includes(url);
 
-    const rssUrl = state.form.url;
-    isUrlValid(rssUrl).then((valid) => {
+  const validate = (url) => {
+    isUrlValid(url).then((valid) => {
       state.form.inputProcessState = 'filling';
-      if (valid && !isUrlDuplicated(rssUrl)) {
+      if (valid && !isUrlDuplicated(url)) {
         state.form.validationState = 'valid';
         state.errors = {};
-      } else if (state.form.url === '') {
+      } else if (url === '') {
         state.form.validationState = 'notValidated';
         state.errors = {};
-      } else if (valid && isUrlDuplicated(rssUrl)) {
+      } else if (valid && isUrlDuplicated(url)) {
         state.form.validationState = 'invalid';
         state.errors = { err: 'addedUrl', errType: 'input' };
       } else {
@@ -69,7 +68,7 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
-    validate();
+    validate(state.form.url);
   });
 
   inputForm.addEventListener('submit', (e) => {
@@ -94,7 +93,7 @@ export default () => {
         }
       });
     state.form.inputProcessState = 'done';
-    updateFeed();
+    // updateFeed();
   });
 
   i18next.init({
