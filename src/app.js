@@ -14,11 +14,9 @@ export default () => {
       validationState: 'valid',
       url: '',
     },
-    feed: {
-      channels: [],
-      posts: [],
-      errors: {},
-    },
+    channels: [],
+    posts: [],
+    errors: {},
   };
 
   const inputField = document.getElementById('url');
@@ -37,16 +35,16 @@ export default () => {
       state.form.inputProcessState = 'filling';
       if (valid && !isUrlDuplicated(rssUrl)) {
         state.form.validationState = 'valid';
-        state.feed.errors = {};
+        state.errors = {};
       } else if (state.form.url === '') {
         state.form.validationState = 'notValidated';
-        state.feed.errors = {};
+        state.errors = {};
       } else if (valid && isUrlDuplicated(rssUrl)) {
         state.form.validationState = 'invalid';
-        state.feed.errors = { err: 'addedUrl', errType: 'input' };
+        state.errors = { err: 'addedUrl', errType: 'input' };
       } else {
         state.form.validationState = 'invalid';
-        state.feed.errors = { err: 'invalidUrl', errType: 'input' };
+        state.errors = { err: 'invalidUrl', errType: 'input' };
       }
     });
   };
@@ -63,7 +61,7 @@ export default () => {
             postsLinks.push(post.postLink);
           }
         });
-        state.feed.posts = [...filteredNewPosts];
+        state.posts = [...filteredNewPosts];
       });
     });
     setTimeout(updateFeed, 5000);
@@ -85,14 +83,14 @@ export default () => {
         const { title, description, posts } = feedData;
         const channelInfo = { title, description };
         posts.forEach((post) => postsLinks.push(post.postLink));
-        state.feed.channels = [channelInfo];
-        state.feed.posts = [...posts].reverse();
+        state.channels = [channelInfo];
+        state.posts = [...posts].reverse();
       })
       .catch((error) => {
         if (error.response) {
-          state.feed.errors = { err: error.response.status, errType: 'httpClient' };
+          state.errors = { err: error.response.status, errType: 'httpClient' };
         } else {
-          state.feed.errors = { err: error.message, errType: 'httpClient' };
+          state.errors = { err: error.message, errType: 'httpClient' };
         }
       });
     state.form.inputProcessState = 'done';
