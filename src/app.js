@@ -69,7 +69,7 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
-    validate(state);
+    validate();
   });
 
   inputForm.addEventListener('submit', (e) => {
@@ -94,7 +94,7 @@ export default () => {
         }
       });
     state.form.inputProcessState = 'done';
-    updateFeed(state);
+    updateFeed();
   });
 
   i18next.init({
