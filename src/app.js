@@ -7,27 +7,7 @@ import render from './renders';
 import parse from './parser';
 import resources from './locales';
 
-const state = {
-  form: {
-    inputProcessState: 'filling', // => filling | done
-    validationState: 'valid',
-    url: '',
-  },
-  channels: [],
-  posts: [],
-  errors: {},
-};
-
-const inputField = document.getElementById('url');
-const inputForm = document.getElementById('inputForm');
-const proxy = 'cors-anywhere.herokuapp.com';
-
 const postsLinks = [];
-const urls = [];
-
-const checkoutFeedUrlSchema = yup.string().url().required();
-const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-const isUrlDuplicated = (url) => urls.includes(url);
 
 i18next.init({
   debug: true,
@@ -37,47 +17,72 @@ i18next.init({
   keySeparator: '.',
 });
 
-const validate = (url) => {
-  isUrlValid(url).then((valid) => {
-    state.form.inputProcessState = 'filling';
-    if (valid && !isUrlDuplicated(url)) {
-      state.form.validationState = 'valid';
-      state.errors = {};
+const validate = (state) => {
+  const { form, feed } = state;
+
+  const checkoutFeedUrlSchema = yup.string().url().required();
+  const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
+  const isUrlDuplicated = (url) => feed.urls.includes(url);
+
+  const rssUrl = form.url;
+  isUrlValid(rssUrl).then((valid) => {
+    form.inputProcessState = 'filling';
+    if (valid && !isUrlDuplicated(rssUrl)) {
+      form.validationState = 'valid';
+      feed.errors = {};
     } else if (state.form.url === '') {
-      state.form.validationState = 'notValidated';
-      state.errors = {};
-    } else if (valid && isUrlDuplicated(url)) {
-      state.form.validationState = 'invalid';
-      state.errors = { err: 'addedUrl', errType: 'input' };
+      form.validationState = 'notValidated';
+      feed.errors = {};
+    } else if (valid && isUrlDuplicated(rssUrl)) {
+      form.validationState = 'invalid';
+      feed.errors = { err: 'addedUrl', errType: 'input' };
     } else {
-      state.form.validationState = 'invalid';
-      state.errors = { err: 'invalidUrl', errType: 'input' };
+      form.validationState = 'invalid';
+      feed.errors = { err: 'invalidUrl', errType: 'input' };
     }
   });
 };
 
-const updateFeed = () => {
-  urls.forEach((url) => {
-    const link = `https://${proxy}/${url}`;
-    axios.get(link).then((response) => {
-      const { posts } = parse(response.data);
-      const filteredNewPosts = [];
-      posts.forEach((post) => {
-        if (!postsLinks.includes(post.postLink)) {
-          filteredNewPosts.unshift(post);
-          postsLinks.push(post.postLink);
-        }
-      });
-      state.posts = [...filteredNewPosts];
-    });
-  });
-  setTimeout(updateFeed, 5000);
-};
-
 export default () => {
+  const state = {
+    form: {
+      inputProcessState: 'filling', // => filling | done
+      validationState: 'valid',
+      url: '',
+    },
+    feed: {
+      channels: [],
+      posts: [],
+      urls: [],
+      errors: {},
+    },
+  };
+
+  const inputField = document.getElementById('url');
+  const inputForm = document.getElementById('inputForm');
+  const proxy = 'cors-anywhere.herokuapp.com';
+
+  const updateFeed = () => {
+    state.feed.urls.forEach((url) => {
+      const link = `https://${proxy}/${url}`;
+      axios.get(link).then((response) => {
+        const { posts } = parse(response.data);
+        const filteredNewPosts = [];
+        posts.forEach((post) => {
+          if (!postsLinks.includes(post.postLink)) {
+            filteredNewPosts.unshift(post);
+            postsLinks.push(post.postLink);
+          }
+        });
+        state.feed.posts = [...filteredNewPosts];
+      });
+    });
+    setTimeout(updateFeed, 5000);
+  };
+
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
-    validate(state.form.url);
+    validate(state);
   });
 
   inputForm.addEventListener('submit', (e) => {
@@ -86,22 +91,23 @@ export default () => {
     const link = `https://${proxy}/${rssUrl}`;
     axios.get(link)
       .then((response) => {
-        urls.push(rssUrl);
+        state.feed.urls.push(rssUrl);
         const feedData = parse(response.data);
         const { title, description, posts } = feedData;
         const channelInfo = { title, description };
         posts.forEach((post) => postsLinks.push(post.postLink));
-        state.channels = [channelInfo];
-        state.posts = [...posts].reverse();
+        state.feed.channels = [channelInfo];
+        state.feed.posts = [...posts].reverse();
       })
       .catch((error) => {
         if (error.response) {
-          state.errors = { err: error.response.status, errType: 'httpClient' };
+          state.feed.errors = { err: error.response.status, errType: 'httpClient' };
         } else {
-          state.errors = { err: error.message, errType: 'httpClient' };
+          state.feed.errors = { err: error.message, errType: 'httpClient' };
         }
       });
     state.form.inputProcessState = 'done';
+    updateFeed(state);
   });
 
   updateFeed();

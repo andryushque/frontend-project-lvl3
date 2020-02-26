@@ -3,7 +3,7 @@ import i18next from 'i18next';
 import _ from 'lodash';
 
 export default (state) => {
-  const { form } = state;
+  const { form, feed } = state;
   const inputField = document.getElementById('url');
   const button = document.querySelector('.btn');
   const errorMessage = document.getElementById('errorMessage');
@@ -111,16 +111,16 @@ export default (state) => {
     }
   });
 
-  watch(state, 'errors', () => {
-    renderErrorMessage(state.errors);
+  watch(feed, 'errors', () => {
+    renderErrorMessage(feed.errors);
   });
 
-  watch(state, 'channels', () => {
-    renderChannelsList(state.channels);
+  watch(feed, 'channels', () => {
+    renderChannelsList(feed.channels);
   });
 
-  watch(state, 'posts', () => {
-    renderPostsList(state.posts);
-    renderPostsCount(state.posts.length);
+  watch(feed, 'posts', () => {
+    renderPostsList(feed.posts);
+    renderPostsCount(feed.posts.length);
   });
 };
