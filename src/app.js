@@ -57,7 +57,8 @@ export default () => {
         const currentPosts = state.posts;
         const newPosts = _.differenceBy(posts, currentPosts, 'postLink');
         newPosts.forEach(({ postTitle, postLink }) => {
-          state.posts.unshift({ postTitle, postLink, postId: _.uniqueId('post_') });
+          const postId = _.uniqueId('post_');
+          state.posts.unshift({ postTitle, postLink, postId });
         });
       });
     });
