@@ -54,14 +54,12 @@ export default () => {
       axios.get(link).then((response) => {
         const { posts } = parse(response.data);
         const filteredNewPosts = [];
-        /*
         posts.forEach((post) => {
           if (!postsLinks.includes(post.postLink)) {
             filteredNewPosts.unshift(post);
             postsLinks.push(post.postLink);
           }
         });
-        */
         state.posts = [...filteredNewPosts];
       });
     });
