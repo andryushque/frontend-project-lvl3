@@ -1,6 +1,5 @@
 import { watch } from 'melanke-watchjs';
 import i18next from 'i18next';
-import _ from 'lodash';
 
 export default (state) => {
   const { form } = state;
@@ -13,39 +12,41 @@ export default (state) => {
 
   const renderChannelsList = (channels) => {
     channels.forEach((channel) => {
-      const { title, description } = channel;
-      const channelTitle = document.createElement('h5');
-      channelTitle.innerText = title;
-      const channelDescription = document.createElement('div');
-      channelDescription.classList.add('text-secondary');
-      channelDescription.innerText = description;
-
-      const channelItem = document.createElement('div');
-      const underline = document.createElement('hr');
-      channelItem.classList.add('mb-4');
-      channelItem.id = _.uniqueId('channel_');
-      channelItem.append(channelTitle, channelDescription);
-      channelsList.prepend(channelItem, underline);
+      const { title, description, channelId } = channel;
+      if (!document.getElementById(channelId)) {
+        const channelTitle = document.createElement('h5');
+        channelTitle.innerText = title;
+        const channelDescription = document.createElement('div');
+        channelDescription.classList.add('text-secondary');
+        channelDescription.innerText = description;
+        const channelItem = document.createElement('div');
+        const underline = document.createElement('hr');
+        channelItem.classList.add('mb-4');
+        channelItem.id = channelId;
+        channelItem.append(channelTitle, channelDescription);
+        channelsList.prepend(channelItem, underline);
+      }
     });
   };
 
   const renderPostsList = (posts) => {
     posts.forEach((post) => {
-      const { postTitle, postLink } = post;
-      const postItemLink = document.createElement('a');
-      const postItem = document.createElement('li');
-      postItemLink.innerText = postTitle;
-      postItemLink.href = postLink;
-      postItem.classList.add('feedPost');
-      postItem.id = _.uniqueId('post_');
-      postItem.append(postItemLink);
-      postsList.prepend(postItem);
+      const { postTitle, postLink, postId } = post;
+      if (!document.getElementById(postId)) {
+        const postItemLink = document.createElement('a');
+        const postItem = document.createElement('li');
+        postItemLink.innerText = postTitle;
+        postItemLink.href = postLink;
+        postItem.classList.add('feedPost');
+        postItem.id = postId;
+        postItem.append(postItemLink);
+        postsList.prepend(postItem);
+      }
     });
   };
 
   const renderPostsCount = (count) => {
-    const current = Number(postsCount.innerText);
-    postsCount.innerText = current + count;
+    postsCount.innerText = count;
     postsCount.classList.add('text-dark');
   };
 

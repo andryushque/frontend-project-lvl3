@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import * as yup from 'yup';
 import axios from 'axios';
 import i18next from 'i18next';
+import _ from 'lodash';
 import render from './renders';
 import parse from './parser';
 import resources from './locales';
@@ -23,7 +24,6 @@ export default () => {
   const inputField = document.getElementById('url');
   const inputForm = document.getElementById('inputForm');
   const proxy = 'cors-anywhere.herokuapp.com';
-  const postsLinks = [];
 
   const checkoutFeedUrlSchema = yup.string().url().required();
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
@@ -53,14 +53,13 @@ export default () => {
       const link = `https://${proxy}/${url}`;
       axios.get(link).then((response) => {
         const { posts } = parse(response.data);
-        const filteredNewPosts = [];
-        posts.forEach((post) => {
-          if (!postsLinks.includes(post.postLink)) {
-            filteredNewPosts.unshift(post);
-            postsLinks.push(post.postLink);
-          }
+        const currentPosts = state.posts;
+        const newPosts = _.differenceBy(posts, currentPosts, 'postLink');
+        newPosts.forEach((newPost) => {
+          const { postTitle, postLink } = newPost;
+          const postId = _.uniqueId();
+          state.posts.unshift({ postTitle, postLink, postId });
         });
-        state.posts = [...filteredNewPosts];
       });
     });
     setTimeout(updateFeed, 5000);
@@ -77,13 +76,17 @@ export default () => {
     const link = `https://${proxy}/${rssUrl}`;
     axios.get(link)
       .then((response) => {
-        state.urls.push(rssUrl);
         const feedData = parse(response.data);
         const { title, description, posts } = feedData;
-        const channelInfo = { title, description };
-        posts.forEach((post) => postsLinks.push(post.postLink));
-        state.channels = [channelInfo];
-        state.posts = [...posts].reverse();
+        const channelId = _.uniqueId();
+        const channel = { title, description, channelId };
+        state.channels.push(channel);
+        posts.forEach((post) => {
+          const { postTitle, postLink } = post;
+          const postId = _.uniqueId();
+          state.posts.unshift({ postTitle, postLink, postId });
+        });
+        state.urls.push(rssUrl);
       })
       .catch((error) => {
         if (error.response) {
