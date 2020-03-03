@@ -16,6 +16,7 @@ export default () => {
     },
     channels: [],
     posts: [],
+    urls: [],
     errors: {},
   };
 
@@ -23,11 +24,10 @@ export default () => {
   const inputForm = document.getElementById('inputForm');
   const proxy = 'cors-anywhere.herokuapp.com';
   const postsLinks = [];
-  const urls = [];
 
   const checkoutFeedUrlSchema = yup.string().url().required();
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
-  const isUrlDuplicated = (url) => urls.includes(url);
+  const isUrlDuplicated = (url) => state.urls.includes(url);
 
   const validate = (url) => {
     isUrlValid(url).then((valid) => {
@@ -49,7 +49,7 @@ export default () => {
   };
 
   const updateFeed = () => {
-    urls.forEach((url) => {
+    state.urls.forEach((url) => {
       const link = `https://${proxy}/${url}`;
       axios.get(link).then((response) => {
         const { posts } = parse(response.data);
@@ -77,7 +77,7 @@ export default () => {
     const link = `https://${proxy}/${rssUrl}`;
     axios.get(link)
       .then((response) => {
-        urls.push(rssUrl);
+        state.urls.push(rssUrl);
         const feedData = parse(response.data);
         const { title, description, posts } = feedData;
         const channelInfo = { title, description };
@@ -93,7 +93,6 @@ export default () => {
         }
       });
     state.form.inputProcessState = 'done';
-    // updateFeed();
   });
 
   i18next.init({
