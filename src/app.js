@@ -56,10 +56,8 @@ export default () => {
         const { posts } = parse(response.data);
         const currentPosts = state.posts;
         const newPosts = _.differenceBy(posts, currentPosts, 'postLink');
-        newPosts.forEach((newPost) => {
-          const { postTitle, postLink } = newPost;
-          const postId = _.uniqueId('post_');
-          state.posts.unshift({ postTitle, postLink, postId });
+        newPosts.forEach(({ postTitle, postLink }) => {
+          state.posts.unshift({ postTitle, postLink, postId: _.uniqueId('post_') });
         });
       });
     });
@@ -82,10 +80,8 @@ export default () => {
         const channelId = _.uniqueId('channel_');
         const channel = { title, description, channelId };
         state.channels.push(channel);
-        posts.forEach((post) => {
-          const { postTitle, postLink } = post;
-          const postId = _.uniqueId('post_');
-          state.posts.unshift({ postTitle, postLink, postId });
+        posts.forEach(({ postTitle, postLink }) => {
+          state.posts.unshift({ postTitle, postLink, postId: _.uniqueId('post_') });
         });
         state.urls.push(rssUrl);
       })
