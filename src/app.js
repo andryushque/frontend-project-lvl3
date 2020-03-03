@@ -78,8 +78,7 @@ export default () => {
       .then((response) => {
         const feedData = parse(response.data);
         const { title, description, posts } = feedData;
-        const channelId = _.uniqueId('channel_');
-        const channel = { title, description, channelId };
+        const channel = { title, description, channelId: _.uniqueId('channel_') };
         state.channels.push(channel);
         posts.forEach(({ postTitle, postLink }) => {
           state.posts.unshift({ postTitle, postLink, postId: _.uniqueId('post_') });
