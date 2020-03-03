@@ -56,7 +56,8 @@ export default () => {
         const { posts } = parse(response.data);
         const currentPosts = state.posts;
         const newPosts = _.differenceBy(posts, currentPosts, 'postLink');
-        newPosts.forEach(({ postTitle, postLink }) => {
+        newPosts.forEach((newPost) => {
+          const { postTitle, postLink } = newPost;
           const postId = _.uniqueId('post_');
           state.posts.unshift({ postTitle, postLink, postId });
         });
@@ -80,7 +81,8 @@ export default () => {
         const { title, description, posts } = feedData;
         const channel = { title, description, channelId: _.uniqueId('channel_') };
         state.channels.push(channel);
-        posts.forEach(({ postTitle, postLink }) => {
+        posts.forEach((post) => {
+          const { postTitle, postLink } = post;
           state.posts.unshift({ postTitle, postLink, postId: _.uniqueId('post_') });
         });
         state.urls.push(rssUrl);
