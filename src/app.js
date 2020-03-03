@@ -24,6 +24,7 @@ export default () => {
   const inputField = document.getElementById('url');
   const inputForm = document.getElementById('inputForm');
   const proxy = 'cors-anywhere.herokuapp.com';
+  const updateDelay = 5000;
 
   const checkoutFeedUrlSchema = yup.string().url().required();
   const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
@@ -62,7 +63,7 @@ export default () => {
         });
       });
     });
-    setTimeout(updateFeed, 5000);
+    setTimeout(updateFeed, updateDelay);
   };
 
   inputField.addEventListener('input', (e) => {
@@ -96,6 +97,7 @@ export default () => {
         }
       });
     state.form.inputProcessState = 'done';
+    setTimeout(updateFeed, updateDelay);
   });
 
   i18next.init({
@@ -105,8 +107,6 @@ export default () => {
     fallbackLng: 'en',
     keySeparator: '.',
   });
-
-  updateFeed();
 
   render(state);
 };
