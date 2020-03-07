@@ -26,27 +26,24 @@ export default () => {
   const proxy = 'cors-anywhere.herokuapp.com';
   const updateDelay = 5000;
 
-  const checkoutFeedUrlSchema = yup.string().url().required();
-  const isUrlValid = (url) => checkoutFeedUrlSchema.isValid(url).then((valid) => valid);
+  const isUrlValid = (url) => yup.string().url().required().isValidSync(url);
   const isUrlDuplicated = (url) => state.urls.includes(url);
 
-  const validate = (url) => {
-    isUrlValid(url).then((valid) => {
-      state.form.inputProcessState = 'filling';
-      if (valid && !isUrlDuplicated(url)) {
-        state.form.validationState = 'valid';
-        state.errors = {};
-      } else if (url === '') {
-        state.form.validationState = 'notValidated';
-        state.errors = {};
-      } else if (valid && isUrlDuplicated(url)) {
-        state.form.validationState = 'invalid';
-        state.errors = { err: 'addedUrl', errType: 'input' };
-      } else {
-        state.form.validationState = 'invalid';
-        state.errors = { err: 'invalidUrl', errType: 'input' };
-      }
-    });
+  const updateValidationState = (url) => {
+    state.form.inputProcessState = 'filling';
+    if (url === '') {
+      state.form.validationState = 'notValidated';
+      state.errors = {};
+    } else if (isUrlValid(url) && !isUrlDuplicated(url)) {
+      state.form.validationState = 'valid';
+      state.errors = {};
+    } else if (isUrlValid(url) && isUrlDuplicated(url)) {
+      state.form.validationState = 'invalid';
+      state.errors = { err: 'addedUrl', errType: 'input' };
+    } else {
+      state.form.validationState = 'invalid';
+      state.errors = { err: 'invalidUrl', errType: 'input' };
+    }
   };
 
   const updateFeed = () => {
@@ -68,7 +65,7 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
-    validate(state.form.url);
+    updateValidationState(state.form.url);
   });
 
   inputForm.addEventListener('submit', (e) => {
