@@ -1,11 +1,11 @@
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import * as yup from 'yup';
 import axios from 'axios';
 import i18next from 'i18next';
 import _ from 'lodash';
 import render from './renders';
 import parse from './parser';
+import { isUrlValid, isUrlDuplicated } from './validator';
 import resources from './locales';
 
 export default () => {
@@ -26,18 +26,17 @@ export default () => {
   const proxy = 'cors-anywhere.herokuapp.com';
   const updateDelay = 5000;
 
-  const isUrlValid = (url) => yup.string().url().required().isValidSync(url);
-  const isUrlDuplicated = (url) => state.urls.includes(url);
-
-  const updateValidationState = (url) => {
+  const updateValidationState = () => {
+    const rssUrl = state.form.url;
+    const urlsList = state.urls;
     state.form.inputProcessState = 'filling';
-    if (url === '') {
+    if (rssUrl === '') {
       state.form.validationState = 'notValidated';
       state.errors = {};
-    } else if (isUrlValid(url) && !isUrlDuplicated(url)) {
+    } else if (isUrlValid(rssUrl) && !isUrlDuplicated(rssUrl, urlsList)) {
       state.form.validationState = 'valid';
       state.errors = {};
-    } else if (isUrlValid(url) && isUrlDuplicated(url)) {
+    } else if (isUrlValid(rssUrl) && isUrlDuplicated(rssUrl, urlsList)) {
       state.form.validationState = 'invalid';
       state.errors = { err: 'addedUrl', errType: 'input' };
     } else {
@@ -65,7 +64,7 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
-    updateValidationState(state.form.url);
+    updateValidationState();
   });
 
   inputForm.addEventListener('submit', (e) => {
