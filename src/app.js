@@ -8,6 +8,26 @@ import parse from './parser';
 import { isUrlValid, isUrlDuplicated } from './validator';
 import resources from './locales';
 
+const validate = (state) => {
+  const errors = {};
+  const rssUrl = state.form.url;
+  const urlsList = state.urls;
+  if (rssUrl === '') {
+    errors.status = 'notValidated';
+  } else if (isUrlValid(rssUrl) && !isUrlDuplicated(rssUrl, urlsList)) {
+    errors.status = 'valid';
+  } else if (isUrlValid(rssUrl) && isUrlDuplicated(rssUrl, urlsList)) {
+    errors.status = 'invalid';
+    errors.err = 'addedUrl';
+    errors.type = 'input';
+  } else {
+    errors.status = 'invalid';
+    errors.err = 'invalidUrl';
+    errors.type = 'input';
+  }
+  return errors;
+};
+
 export default () => {
   const state = {
     form: {
@@ -27,22 +47,9 @@ export default () => {
   const updateDelay = 5000;
 
   const updateValidationState = () => {
-    const rssUrl = state.form.url;
-    const urlsList = state.urls;
-    state.form.inputProcessState = 'filling';
-    if (rssUrl === '') {
-      state.form.validationState = 'notValidated';
-      state.errors = {};
-    } else if (isUrlValid(rssUrl) && !isUrlDuplicated(rssUrl, urlsList)) {
-      state.form.validationState = 'valid';
-      state.errors = {};
-    } else if (isUrlValid(rssUrl) && isUrlDuplicated(rssUrl, urlsList)) {
-      state.form.validationState = 'invalid';
-      state.errors = { err: 'addedUrl', errType: 'input' };
-    } else {
-      state.form.validationState = 'invalid';
-      state.errors = { err: 'invalidUrl', errType: 'input' };
-    }
+    const errors = validate(state);
+    state.errors = errors;
+    state.form.validationState = state.errors.status;
   };
 
   const updateFeed = () => {
@@ -64,6 +71,7 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
+    state.form.inputProcessState = 'filling';
     updateValidationState();
   });
 
@@ -85,9 +93,9 @@ export default () => {
       })
       .catch((error) => {
         if (error.response) {
-          state.errors = { err: error.response.status, errType: 'httpClient' };
+          state.errors = { err: error.response.status, type: 'httpClient' };
         } else {
-          state.errors = { err: error.message, errType: 'httpClient' };
+          state.errors = { err: error.message, type: 'httpClient' };
         }
       });
     state.form.inputProcessState = 'done';
