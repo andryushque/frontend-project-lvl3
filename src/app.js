@@ -8,7 +8,6 @@ import parse from './parser';
 import { isUrlValid, isUrlDuplicated } from './utils';
 import resources from './locales';
 
-
 const validate = (state) => {
   const errors = {};
   const rssUrl = state.form.url;
@@ -29,11 +28,10 @@ const validate = (state) => {
   return errors;
 };
 
-
 export default () => {
   const state = {
     form: {
-      inputProcessState: 'filling', // => filling | sending | finished
+      processState: 'filling', // => filling | sending | finished
       validationState: 'valid', // => valid | invalid | notValidated
       url: '',
     },
@@ -73,7 +71,7 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
-    state.form.inputProcessState = 'filling';
+    state.form.processState = 'filling';
     updateValidationState();
   });
 
@@ -81,7 +79,7 @@ export default () => {
     e.preventDefault();
     const rssUrl = state.form.url;
     const link = `https://${proxy}/${rssUrl}`;
-    state.form.inputProcessState = 'sending';
+    state.form.processState = 'sending';
     axios.get(link)
       .then((response) => {
         const feedData = parse(response.data);
@@ -93,7 +91,7 @@ export default () => {
           state.posts.unshift({ postTitle, postLink, postId: _.uniqueId('post_') });
         });
         state.urls.push(rssUrl);
-        state.form.inputProcessState = 'finished';
+        state.form.processState = 'finished';
       })
       .catch((error) => {
         if (error.response) {
@@ -101,7 +99,7 @@ export default () => {
         } else {
           state.errors = { err: error.message, type: 'httpClient' };
         }
-        state.form.inputProcessState = 'finished';
+        state.form.processState = 'finished';
       });
     setTimeout(updateFeed, updateDelay);
   });

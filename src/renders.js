@@ -60,9 +60,9 @@ export default (state) => {
     removeErrorMessage();
     const errorMessageContainer = document.createElement('div');
     errorMessageContainer.classList.add('errorMessage', 'container', 'd-block', 'mt-2');
-    const { err, type } = errors;
+    const { status, type, err } = errors;
     const interval = 4000;
-
+    if (status === 'valid' || status === 'notValidated') return;
     if (type === 'httpClient') {
       switch (err) {
         case 404: case 406: case 500:
@@ -78,7 +78,6 @@ export default (state) => {
       errorMessage.append(errorMessageContainer);
       setTimeout(removeErrorMessage, interval);
     }
-
     if (type === 'input') {
       errorMessageContainer.innerText = i18next.t(`${type}.${err}`);
       errorMessageContainer.classList.add('invalid-feedback');
@@ -87,15 +86,15 @@ export default (state) => {
   };
 
   watch(state, 'form', () => {
-    if (form.inputProcessState === 'finished') {
+    if (form.processState === 'finished') {
       inputField.classList.remove('is-valid', 'is-invalid');
       inputField.value = '';
       inputField.disabled = false;
       submitButton.disabled = true;
-    } else if (form.inputProcessState === 'sending') {
+    } else if (form.processState === 'sending') {
       inputField.disabled = true;
       submitButton.disabled = true;
-    } else if (form.inputProcessState === 'filling') {
+    } else if (form.processState === 'filling') {
       inputField.disabled = false;
       submitButton.disabled = true;
       switch (form.validationState) {
@@ -115,7 +114,7 @@ export default (state) => {
           throw new Error(`Unknown validation state: ${form.validationState}`);
       }
     } else {
-      throw new Error(`Unknown state: ${form.inputProcessState}`);
+      throw new Error(`Unknown state: ${form.processState}`);
     }
   });
 
