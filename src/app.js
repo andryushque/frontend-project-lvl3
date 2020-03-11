@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import _ from 'lodash';
 import render from './renders';
 import parse from './parser';
-import { isUrlValid, isUrlDuplicated } from './validator';
+import { isUrlValid, isUrlDuplicated } from './utils';
 import resources from './locales';
 
 const validate = (state) => {
@@ -18,12 +18,12 @@ const validate = (state) => {
     errors.status = 'valid';
   } else if (isUrlValid(rssUrl) && isUrlDuplicated(rssUrl, urlsList)) {
     errors.status = 'invalid';
-    errors.err = 'addedUrl';
     errors.type = 'input';
+    errors.err = 'addedUrl';
   } else {
     errors.status = 'invalid';
-    errors.err = 'invalidUrl';
     errors.type = 'input';
+    errors.err = 'invalidUrl';
   }
   return errors;
 };
@@ -31,8 +31,8 @@ const validate = (state) => {
 export default () => {
   const state = {
     form: {
-      inputProcessState: 'filling', // => filling | done
-      validationState: 'valid',
+      inputProcessState: 'filling', // => filling | sending | finished
+      validationState: 'valid', // => valid | invalid | notValidated
       url: '',
     },
     channels: [],
@@ -41,7 +41,7 @@ export default () => {
     errors: {},
   };
 
-  const inputField = document.getElementById('url');
+  const inputField = document.getElementById('inputField');
   const inputForm = document.getElementById('inputForm');
   const proxy = 'cors-anywhere.herokuapp.com';
   const updateDelay = 5000;
@@ -79,6 +79,7 @@ export default () => {
     e.preventDefault();
     const rssUrl = state.form.url;
     const link = `https://${proxy}/${rssUrl}`;
+    state.form.inputProcessState = 'sending';
     axios.get(link)
       .then((response) => {
         const feedData = parse(response.data);
@@ -98,7 +99,7 @@ export default () => {
           state.errors = { err: error.message, type: 'httpClient' };
         }
       });
-    state.form.inputProcessState = 'done';
+    state.form.inputProcessState = 'finished';
     setTimeout(updateFeed, updateDelay);
   });
 

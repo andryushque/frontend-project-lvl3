@@ -3,8 +3,8 @@ import i18next from 'i18next';
 
 export default (state) => {
   const { form } = state;
-  const inputField = document.getElementById('url');
-  const button = document.querySelector('.btn');
+  const inputField = document.getElementById('inputField');
+  const submitButton = document.querySelector('.btn');
   const errorMessage = document.getElementById('errorMessage');
   const channelsList = document.querySelector('.channelsList');
   const postsList = document.querySelector('.postsList');
@@ -87,17 +87,20 @@ export default (state) => {
   };
 
   watch(state, 'form', () => {
-    if (form.inputProcessState === 'done') {
+    if (form.inputProcessState === 'finished') {
       inputField.classList.remove('is-valid', 'is-invalid');
       inputField.value = '';
-      button.disabled = true;
-    } else {
-      button.disabled = true;
+      submitButton.disabled = true;
+    } else if (form.inputProcessState === 'sending') {
+      inputField.disabled = true;
+      submitButton.disabled = true;
+    } else if (form.inputProcessState === 'filling') {
+      submitButton.disabled = true;
       switch (form.validationState) {
         case 'valid':
           inputField.classList.remove('is-invalid');
           inputField.classList.add('is-valid');
-          button.disabled = false;
+          submitButton.disabled = false;
           break;
         case 'invalid':
           inputField.classList.remove('is-valid');
@@ -109,6 +112,8 @@ export default (state) => {
         default:
           throw new Error(`Unknown validation state: ${form.validationState}`);
       }
+    } else {
+      throw new Error(`Unknown state: ${form.inputProcessState}`);
     }
   });
 
