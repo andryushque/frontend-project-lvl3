@@ -90,11 +90,13 @@ export default (state) => {
     if (form.inputProcessState === 'finished') {
       inputField.classList.remove('is-valid', 'is-invalid');
       inputField.value = '';
+      inputField.disabled = false;
       submitButton.disabled = true;
     } else if (form.inputProcessState === 'sending') {
       inputField.disabled = true;
       submitButton.disabled = true;
     } else if (form.inputProcessState === 'filling') {
+      inputField.disabled = false;
       submitButton.disabled = true;
       switch (form.validationState) {
         case 'valid':

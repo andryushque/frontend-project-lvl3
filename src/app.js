@@ -8,6 +8,7 @@ import parse from './parser';
 import { isUrlValid, isUrlDuplicated } from './utils';
 import resources from './locales';
 
+
 const validate = (state) => {
   const errors = {};
   const rssUrl = state.form.url;
@@ -27,6 +28,7 @@ const validate = (state) => {
   }
   return errors;
 };
+
 
 export default () => {
   const state = {
@@ -91,6 +93,7 @@ export default () => {
           state.posts.unshift({ postTitle, postLink, postId: _.uniqueId('post_') });
         });
         state.urls.push(rssUrl);
+        state.form.inputProcessState = 'finished';
       })
       .catch((error) => {
         if (error.response) {
@@ -98,8 +101,8 @@ export default () => {
         } else {
           state.errors = { err: error.message, type: 'httpClient' };
         }
+        state.form.inputProcessState = 'finished';
       });
-    state.form.inputProcessState = 'finished';
     setTimeout(updateFeed, updateDelay);
   });
 
