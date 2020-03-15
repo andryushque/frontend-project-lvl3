@@ -5,34 +5,14 @@ import i18next from 'i18next';
 import _ from 'lodash';
 import render from './renders';
 import parse from './parser';
-import { isUrlValid, isUrlDuplicated } from './utils';
+import validate from './validator';
 import resources from './locales';
-
-const validate = (state) => {
-  const errors = {};
-  const rssUrl = state.form.url;
-  const urlsList = state.urls;
-  if (rssUrl === '') {
-    errors.status = 'notValidated';
-  } else if (isUrlValid(rssUrl) && !isUrlDuplicated(rssUrl, urlsList)) {
-    errors.status = 'valid';
-  } else if (isUrlValid(rssUrl) && isUrlDuplicated(rssUrl, urlsList)) {
-    errors.status = 'invalid';
-    errors.type = 'input';
-    errors.err = 'addedUrl';
-  } else {
-    errors.status = 'invalid';
-    errors.type = 'input';
-    errors.err = 'invalidUrl';
-  }
-  return errors;
-};
 
 export default () => {
   const state = {
     form: {
-      processState: 'filling', // => filling | sending | finished
-      validationState: 'valid', // => valid | invalid | notValidated
+      processState: 'filling', // => filling | sending | finished | ready
+      validationState: true, // => true | false
       url: '',
     },
     channels: [],
@@ -47,9 +27,9 @@ export default () => {
   const updateDelay = 5000;
 
   const updateValidationState = () => {
-    const errors = validate(state);
+    const errors = validate(state.form.url, state.urls);
     state.errors = errors;
-    state.form.validationState = state.errors.status;
+    state.form.validationState = _.isEqual(errors, {});
   };
 
   const updateFeed = () => {
@@ -71,6 +51,10 @@ export default () => {
 
   inputField.addEventListener('input', (e) => {
     state.form.url = e.target.value;
+    if (state.form.url === '') {
+      state.form.processState = 'ready';
+      return;
+    }
     state.form.processState = 'filling';
     updateValidationState();
   });
@@ -95,9 +79,9 @@ export default () => {
       })
       .catch((error) => {
         if (error.response) {
-          state.errors = { err: error.response.status, type: 'httpClient' };
+          state.errors = { type: 'httpClient', subType: error.response.status };
         } else {
-          state.errors = { err: error.message, type: 'httpClient' };
+          state.errors = { type: 'httpClient', subType: error.message };
         }
         state.form.processState = 'finished';
       });

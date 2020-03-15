@@ -60,13 +60,13 @@ export default (state) => {
     removeErrorMessage();
     const errorMessageContainer = document.createElement('div');
     errorMessageContainer.classList.add('errorMessage', 'container', 'd-block', 'mt-2');
-    const { status, type, err } = errors;
+    const { type, subType } = errors;
     const interval = 4000;
-    if (status === 'valid' || status === 'notValidated') return;
+    if (errors.length === 0) return;
     if (type === 'httpClient') {
-      switch (err) {
+      switch (subType) {
         case 404: case 406: case 500:
-          errorMessageContainer.innerText = i18next.t(`${type}.error${err}`);
+          errorMessageContainer.innerText = i18next.t(`${type}.error${subType}`);
           break;
         case 'Network Error':
           errorMessageContainer.innerText = i18next.t(`${type}.networkError`);
@@ -79,7 +79,7 @@ export default (state) => {
       setTimeout(removeErrorMessage, interval);
     }
     if (type === 'input') {
-      errorMessageContainer.innerText = i18next.t(`${type}.${err}`);
+      errorMessageContainer.innerText = i18next.t(`${type}.${subType}`);
       errorMessageContainer.classList.add('invalid-feedback');
       errorMessage.append(errorMessageContainer);
     }
@@ -94,21 +94,23 @@ export default (state) => {
     } else if (form.processState === 'sending') {
       inputField.disabled = true;
       submitButton.disabled = true;
+    } else if (form.processState === 'ready') {
+      inputField.classList.remove('is-valid', 'is-invalid');
+      inputField.disabled = false;
+      submitButton.disabled = true;
+      removeErrorMessage();
     } else if (form.processState === 'filling') {
       inputField.disabled = false;
       submitButton.disabled = true;
       switch (form.validationState) {
-        case 'valid':
+        case true:
           inputField.classList.remove('is-invalid');
           inputField.classList.add('is-valid');
           submitButton.disabled = false;
           break;
-        case 'invalid':
+        case false:
           inputField.classList.remove('is-valid');
           inputField.classList.add('is-invalid');
-          break;
-        case 'notValidated':
-          inputField.classList.remove('is-valid', 'is-invalid');
           break;
         default:
           throw new Error(`Unknown validation state: ${form.validationState}`);
